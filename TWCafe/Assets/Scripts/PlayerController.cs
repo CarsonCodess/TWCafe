@@ -1,58 +1,68 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float dashDistance = 5f;
+    [SerializeField] private float dashTime = 0.25f;
+    
+    private PlayerControls _playerControls;
+    private Vector2 _moveDirection = Vector2.zero;
+    private InputAction _move;
+    private InputAction _dash;
+    private bool _canDash = true;
+    private Rigidbody2D _rb;
 
-    Rigidbody2D rb;
-    [SerializeField] float moveSpeed = 5f;
-    [SerializeField] float dashSpeed = 10f;
-    [SerializeField] PlayerControls playerControls;
-
-    Vector2 moveDirection = Vector2.zero;
-    private InputAction move;
-    private InputAction dash;
-
-    void Awake(){
-        playerControls = new PlayerControls();
-    }
-
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
+        _playerControls = new PlayerControls();
+        _rb = GetComponent<Rigidbody2D>();
     }
+    
 
-    private void OnEnable(){
-        move = playerControls.Movement.Walk;
-        move.Enable();
-
-        dash = playerControls.Movement.Dash;
-        dash.Enable();
-        dash.performed+=Dash;
-    }
-
-    private void OnDisable(){
-        move.Disable();
-
-        dash.Disable();
-    }
-
-    // Update is called once per frame
-    void Update()
+    private void OnEnable()
     {
-        moveDirection = move.ReadValue<Vector2>();
+        _move = _playerControls.Movement.Walk;
+        _move.Enable();
+
+        _dash = _playerControls.Movement.Dash;
+        _dash.Enable();
+        _dash.performed += Dash;
     }
 
-    private void FixedUpdate(){
-        rb.velocity = new Vector2(moveDirection.x*moveSpeed, moveDirection.y*moveSpeed);
+    private void OnDisable()
+    {
+        _move.Disable();
+
+        _dash.Disable();
+    }
+    
+    private void Update()
+    {
+        _moveDirection = _move.ReadValue<Vector2>();
     }
 
-    private void Dash(InputAction.CallbackContext context){
-        //rb.AddForce(new Vector2(moveDirection * dashSpeed, moveDirection * dashSpeed), ForceMode2D.Impulse);
-        Debug.Log("Dashed");
+    private void FixedUpdate()
+    {
+        if(!_canDash)
+            return;
+        var acceleration = (_moveDirection * moveSpeed - _rb.velocity) / 3f;
+        _rb.velocity += acceleration * Time.deltaTime * 100;
+    }
+
+    private void Dash(InputAction.CallbackContext context)
+    {
+        if(!_canDash)
+            return;
+        _canDash = false;
+        var dashTarget = _rb.position + _moveDirection * dashDistance;
+        _rb.DOMove(dashTarget, dashTime).SetEase(Ease.InOutQuint);
+        _canDash = true;
     }
 }
