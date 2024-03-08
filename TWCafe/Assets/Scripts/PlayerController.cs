@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     private InputAction _dash;
     private bool _canDash = true;
     private Rigidbody2D _rb;
+    private FoodItem _equippedItem;
 
     private void Awake()
     {
@@ -64,5 +65,20 @@ public class PlayerController : MonoBehaviour
         var dashTarget = _rb.position + _moveDirection * dashDistance;
         _rb.DOMove(dashTarget, dashTime).SetEase(Ease.InOutQuint);
         _canDash = true;
+    }
+
+    public void Pickup(FoodItem item)
+    {
+        _equippedItem = item;
+    }
+    
+    public void Drop()
+    {
+        _equippedItem = null;
+    }
+
+    public FoodItem GetItem()
+    {
+        return _equippedItem;
     }
 }
