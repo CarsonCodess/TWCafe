@@ -1,7 +1,8 @@
 using DG.Tweening;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Customer : MonoBehaviour
+public class Customer : NetworkBehaviour
 {
     private Rigidbody2D _rb;
     private WaveManager _waveManager;
@@ -32,7 +33,7 @@ public class Customer : MonoBehaviour
         if(_seat)
             _waveManager.AddSeat(_seat);
         transform.DOMove(_waveManager.transform.position, 5f).OnComplete(() => {
-            Destroy(gameObject);
+            GetComponent<NetworkObject>().Despawn();
         });
     }
 }
