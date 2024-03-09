@@ -98,6 +98,9 @@ namespace Game.Networking.Core
             {
                 await UserDisconnect();
             }
+            
+            if(GetNetworkManager.IsHost)
+                DeSpawnClientServerRpc(clientId);
             //await UserDisconnectServerRpc();
         }
         
@@ -278,7 +281,6 @@ namespace Game.Networking.Core
                 UpdateLobbyHeartbeat();
             if (leaveOnEscape && Input.GetKeyDown(KeyCode.Escape))
             {
-                await DeSpawnClientServerRpc(GetNetworkManager.LocalClientId);
                 await UserDisconnect();
             }
         }
