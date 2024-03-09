@@ -96,25 +96,27 @@ namespace Game.Networking.Core
         {
             if(clientId == HostNetworkId && !GetNetworkManager.IsHost && clientId != GetNetworkManager.LocalClientId)
             {
-                await UserDisconnectServerRpc();
+                //await UserDisconnectServerRpc();
             }
             //await UserDisconnectServerRpc();
         }
         
-        [ServerRpc]
-        public async Task UserDisconnectServerRpc()
+        [ServerRpc(RequireOwnership = false)]
+        public async Task UserDisconnectServerRpc(ulong clientId)
         {
             var nm = GetNetworkManager;
             if(!nm.IsListening || nm.ShutdownInProgress)
                 return;
             LoadOfflineScene();
+            if(!nm.IsHost)
+                return;
             HideLobbyCode();
             if(nm.IsHost)
                 nm.ConnectionApprovalCallback -= HandleConnectionApproval;
 
             await LeaveOrDeleteLobby();
             _connectionStatus = ConnectionStatus.UserDisconnect;
-            nm.Shutdown();
+            nm.DisconnectClient(clientId);
         }
 
         private async Task LeaveOrDeleteLobby()
@@ -271,7 +273,7 @@ namespace Game.Networking.Core
                 UpdateLobbyHeartbeat();
             if (leaveOnEscape && Input.GetKeyDown(KeyCode.Escape))
             {
-                await UserDisconnectServerRpc();
+                await UserDisconnectServerRpc(GetNetworkManager.LocalClientId);
             }
         }
         
