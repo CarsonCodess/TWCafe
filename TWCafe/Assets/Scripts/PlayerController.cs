@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using Unity.IO.LowLevel.Unsafe;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
     
     [SerializeField] private float moveSpeed = 5f;
@@ -31,23 +32,21 @@ public class PlayerController : MonoBehaviour
 
     private void OnEnable()
     {
+        _playerControls.Enable(); 
         _move = _playerControls.Movement.Walk;
-        _move.Enable();
-
         _dash = _playerControls.Movement.Dash;
-        _dash.Enable();
         _dash.performed += Dash;
     }
 
     private void OnDisable()
     {
-        _move.Disable();
-
-        _dash.Disable();
+        _playerControls.Disable();
     }
     
     private void Update()
     {
+        if(!IsOwner)
+            return;
         _moveDirection = _move.ReadValue<Vector2>();
         _dashTimer += Time.deltaTime;
         if(_dashTimer >= 4){
