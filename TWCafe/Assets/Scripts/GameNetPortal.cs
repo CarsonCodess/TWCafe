@@ -58,6 +58,7 @@ namespace Game.Networking.Core
         private float _heartbeatTime;
 
         #region Initialization
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -73,12 +74,30 @@ namespace Game.Networking.Core
         private async void Start()
         {
             await _authenticationAPIInterface.InitializeAndSignInAsync();
+            Subscribe();
             _connectionStatus = ConnectionStatus.Idle;
+        }
+
+        private void Subscribe()
+        {
+            GetNetworkManager.OnClientDisconnectCallback += OnClientDisconnect;
+        }
+        
+        private void OnDestroy()
+        {
+            if(GetNetworkManager)
+                GetNetworkManager.OnClientDisconnectCallback -= OnClientDisconnect;
         }
 
         #endregion
 
         #region Disconnecting
+        
+        private async void OnClientDisconnect(ulong clientId)
+        {
+            if(clientId == HostNetworkId)
+                LoadOfflineScene();
+        }
 
         public async Task UserDisconnect()
         {
@@ -90,9 +109,7 @@ namespace Game.Networking.Core
                 nm.ConnectionApprovalCallback -= HandleConnectionApproval;
             await LeaveOrDeleteLobby();
             _connectionStatus = ConnectionStatus.UserDisconnect;
-            var host = nm.IsHost;
             nm.Shutdown();
-            LoadOfflineScene(host);
         }
 
         private async Task LeaveOrDeleteLobby()
@@ -223,12 +240,9 @@ namespace Game.Networking.Core
             SwitchSceneServerRpc(onlineSceneName);
         }
     
-        private void LoadOfflineScene(bool host)
+        private void LoadOfflineScene()
         {
-            if(host)
-                SwitchSceneServerRpc(offlineSceneName, true);
-            else
-                SwitchSceneServerRpc(offlineSceneName, false);
+            SceneManager.LoadScene(offlineSceneName, LoadSceneMode.Single);
         }
 
         [ServerRpc]
