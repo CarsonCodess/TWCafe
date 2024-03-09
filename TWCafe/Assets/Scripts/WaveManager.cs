@@ -6,29 +6,30 @@ using UnityEngine;
 public class WaveManager : MonoBehaviour
 {
 
-    public WeightedObjectList<GameObject> WOL = new WeightedObjectList<GameObject>();
-    public int wave;
+    [SerializeField] private WeightedObjectList<GameObject> customers = new WeightedObjectList<GameObject>();
+    [SerializeField] private List<GameObject> seats = new List<GameObject>();
+    private int _wave;
 
-    void Start()
+    private void Start()
     {
-        wave = WOL.Count();
-        StartCoroutine(Spawn());
+        _wave = customers.Count();
+        InvokeRepeating(nameof(SpawnCustomer), 0f, 4f);
     }
 
-    void Update()
+    private void SpawnCustomer()
     {
-        
+        var seat = seats.Count > 0 ? seats[Random.Range(0, seats.Count)] : null;
+        var customer = Instantiate(customers.GetRandomObject(), transform.position, Quaternion.identity);
+        customer.GetComponent<Customer>().Initialize(seat, this);
+    }
+    
+    public void AddSeat(GameObject seat)
+    {
+        seats.Add(seat);
     }
 
-    IEnumerator Spawn(){
-        while(wave > 0){
-            SpawnCustomer();
-            yield return new WaitForSeconds(2f);
-            wave--;
-        }
-    }
-
-    private void SpawnCustomer(){
-        Instantiate(WOL.GetRandomObject(), transform.position, Quaternion.identity);
+    public void RemoveSeat(GameObject seat)
+    {
+        seats.Remove(seat);
     }
 }
