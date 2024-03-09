@@ -94,8 +94,6 @@ namespace Game.Networking.Core
         
         private async void OnClientDisconnect(ulong clientId)
         {
-            if(!GetNetworkManager.IsServer)
-                return;
             await UserDisconnectServerRpc();
         }
 
