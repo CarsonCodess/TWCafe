@@ -117,6 +117,13 @@ namespace Game.Networking.Core
             nm.Shutdown();
         }
 
+        [ServerRpc(RequireOwnership = false)]
+        private async Task DeSpawnClientServerRpc(ulong clientId)
+        {
+            var nm = GetNetworkManager;
+            nm.ConnectedClients[clientId].PlayerObject.Despawn();
+        }
+
         private async Task LeaveOrDeleteLobby()
         {
             if(_lobbyAPIInterface.JoinedLobby == null || GetNetworkManager == null)
@@ -271,6 +278,7 @@ namespace Game.Networking.Core
                 UpdateLobbyHeartbeat();
             if (leaveOnEscape && Input.GetKeyDown(KeyCode.Escape))
             {
+                await DeSpawnClientServerRpc(GetNetworkManager.LocalClientId);
                 await UserDisconnect();
             }
         }
