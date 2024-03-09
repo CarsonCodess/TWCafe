@@ -7,7 +7,7 @@ using UnityEngine;
 public class WaveManager : NetworkBehaviour
 {
     [SerializeField] private WeightedObjectList<GameObject> customers = new WeightedObjectList<GameObject>();
-    [SerializeField] private List<GameObject> seats = new List<GameObject>();
+    public List<GameObject> seats = new List<GameObject>();
     private int _wave;
 
     private void Start()
@@ -19,7 +19,7 @@ public class WaveManager : NetworkBehaviour
 
     private void SpawnCustomer()
     {
-        var seat = seats.Count > 0 ? seats[Random.Range(0, seats.Count)] : null;
+        var seat = Random.Range(0, seats.Count);
         var customer = Instantiate(customers.GetRandomObject(), transform.position, Quaternion.identity);
         customer.GetComponent<NetworkObject>().Spawn(true);
         customer.GetComponent<Customer>().Initialize(seat, this);

@@ -7,10 +7,10 @@ public class Customer : MonoBehaviour
     private WaveManager _waveManager;
     private GameObject _seat;
 
-    public void Initialize(GameObject seat, WaveManager waveManager)
+    public void Initialize(int seat, WaveManager waveManager)
     {
         _waveManager = waveManager;
-        _seat = seat;
+        _seat = waveManager.seats.Count > 0 ? waveManager.seats[seat] : null;
         _rb = GetComponent<Rigidbody2D>();
         Invoke(nameof(LeaveTable), 12f);
         WalkTowardsTable();
