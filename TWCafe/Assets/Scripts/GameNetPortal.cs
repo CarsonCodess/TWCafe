@@ -94,8 +94,24 @@ namespace Game.Networking.Core
         
         private async void OnClientDisconnect(ulong clientId)
         {
-            if(clientId == HostNetworkId)
-                await UserDisconnectServerRpc();
+            if(clientId == HostNetworkId && GetNetworkManager.IsServer)
+                await UserDisconnectClientRpc();
+        }
+        
+        [ClientRpc]
+        public async Task UserDisconnectClientRpc()
+        {
+            var nm = GetNetworkManager;
+            if(!nm.IsListening || nm.ShutdownInProgress)
+                return;
+            HideLobbyCode();
+            if(nm.IsHost)
+                nm.ConnectionApprovalCallback -= HandleConnectionApproval;
+
+            await LeaveOrDeleteLobby();
+            _connectionStatus = ConnectionStatus.UserDisconnect;
+            nm.Shutdown();
+            LoadOfflineScene();
         }
         
         [ServerRpc]
