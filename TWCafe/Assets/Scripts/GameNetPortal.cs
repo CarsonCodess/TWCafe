@@ -96,12 +96,18 @@ namespace Game.Networking.Core
         {
             if(clientId == HostNetworkId && !GetNetworkManager.IsHost)
             {
-                await UserDisconnectServerRpc();
+                await UserDisconnect();
             }
             //await UserDisconnectServerRpc();
         }
+
+        [ClientRpc]
+        public async Task UserDisconnectClientRpc()
+        {
+            await UserDisconnect();
+        }
         
-        public async Task UserDisconnectServerRpc()
+        public async Task UserDisconnect()
         {
             var nm = GetNetworkManager;
             if(!nm.IsListening || nm.ShutdownInProgress)
@@ -270,7 +276,12 @@ namespace Game.Networking.Core
             if(GetNetworkManager.IsHost)
                 UpdateLobbyHeartbeat();
             if (leaveOnEscape && Input.GetKeyDown(KeyCode.Escape))
-                await UserDisconnectServerRpc();
+            {
+                if (!GetNetworkManager.IsHost)
+                    await UserDisconnect();
+                else
+                    await UserDisconnectClientRpc();
+            }
         }
         
         private void UpdateLobbyHeartbeat()
