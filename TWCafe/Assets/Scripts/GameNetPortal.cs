@@ -94,13 +94,13 @@ namespace Game.Networking.Core
         
         private async void OnClientDisconnect(ulong clientId)
         {
+            if(!GetNetworkManager.IsListening)
+                return;
             if(clientId == HostNetworkId && !GetNetworkManager.IsHost && clientId != GetNetworkManager.LocalClientId)
             {
                 await UserDisconnect();
             }
             
-            if(GetNetworkManager.IsHost)
-                DeSpawnClientServerRpc(clientId);
             //await UserDisconnectServerRpc();
         }
         
@@ -114,16 +114,9 @@ namespace Game.Networking.Core
             HideLobbyCode();
             if(nm.IsHost)
                 nm.ConnectionApprovalCallback -= HandleConnectionApproval;
-
             await LeaveOrDeleteLobby();
             _connectionStatus = ConnectionStatus.UserDisconnect;
             nm.Shutdown();
-        }
-        
-        private void DeSpawnClientServerRpc(ulong clientId)
-        {
-            var nm = GetNetworkManager;
-            nm.ConnectedClients[clientId].PlayerObject.Despawn();
         }
 
         private async Task LeaveOrDeleteLobby()
