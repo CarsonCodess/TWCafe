@@ -94,12 +94,13 @@ namespace Game.Networking.Core
         
         private async void OnClientDisconnect(ulong clientId)
         {
-            if(!GetNetworkManager.IsServer)
-                return;
-            await UserDisconnectServerRpc();
+            if(GetNetworkManager.IsServer)
+            {
+                
+            }
+            //await UserDisconnectServerRpc();
         }
-
-        [ServerRpc]
+        
         public async Task UserDisconnectServerRpc()
         {
             var nm = GetNetworkManager;
