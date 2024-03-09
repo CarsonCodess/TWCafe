@@ -94,7 +94,7 @@ namespace Game.Networking.Core
         
         private async void OnClientDisconnect(ulong clientId)
         {
-            if(!GetNetworkManager.IsListening)
+            if(!GetNetworkManager.IsListening || !GetNetworkManager.ShutdownInProgress)
                 return;
             if(clientId == HostNetworkId && !GetNetworkManager.IsHost && clientId != GetNetworkManager.LocalClientId)
             {
@@ -103,8 +103,7 @@ namespace Game.Networking.Core
             
             //await UserDisconnectServerRpc();
         }
-        
-        
+
         public async Task UserDisconnect()
         {
             var nm = GetNetworkManager;
