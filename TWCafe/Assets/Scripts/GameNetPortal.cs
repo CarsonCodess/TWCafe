@@ -94,10 +94,10 @@ namespace Game.Networking.Core
         
         private async void OnClientDisconnect(ulong clientId)
         {
-            if(clientId == HostNetworkId && !GetNetworkManager.IsHost && clientId != GetNetworkManager.LocalClientId)
-            {
-                await UserDisconnect();
-            }
+            // if(clientId == HostNetworkId && !GetNetworkManager.IsHost && clientId != GetNetworkManager.LocalClientId)
+            // {
+            //     await UserDisconnect();
+            // }
             //await UserDisconnectServerRpc();
         }
         
