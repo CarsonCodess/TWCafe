@@ -103,13 +103,13 @@ namespace Game.Networking.Core
             var nm = GetNetworkManager;
             if(!nm.IsListening || nm.ShutdownInProgress)
                 return;
-            LoadOfflineScene();
             HideLobbyCode();
             if(nm.IsHost)
                 nm.ConnectionApprovalCallback -= HandleConnectionApproval;
             await LeaveOrDeleteLobby();
             _connectionStatus = ConnectionStatus.UserDisconnect;
             nm.Shutdown();
+            LoadOfflineScene();
         }
 
         private async Task LeaveOrDeleteLobby()
