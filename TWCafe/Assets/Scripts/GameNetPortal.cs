@@ -111,7 +111,6 @@ namespace Game.Networking.Core
             await LeaveOrDeleteLobby();
             _connectionStatus = ConnectionStatus.UserDisconnect;
             nm.Shutdown();
-            SwitchSceneServerRpc(offlineSceneName, true);
         }
         
         [ServerRpc]
@@ -127,7 +126,10 @@ namespace Game.Networking.Core
             await LeaveOrDeleteLobby();
             _connectionStatus = ConnectionStatus.UserDisconnect;
             nm.Shutdown();
-            LoadOfflineScene();
+            if(!nm.IsHost)
+                LoadOfflineScene();
+            else
+                SwitchSceneServerRpc(offlineSceneName, true);
         }
 
         private async Task LeaveOrDeleteLobby()
