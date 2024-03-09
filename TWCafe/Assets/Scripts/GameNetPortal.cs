@@ -247,7 +247,10 @@ namespace Game.Networking.Core
     
         private void LoadOfflineScene()
         {
-            SwitchSceneServerRpc(offlineSceneName, false);
+            if(!GetNetworkManager.IsHost)
+                SwitchSceneServerRpc(offlineSceneName, false);
+            else
+                SwitchSceneServerRpc(offlineSceneName, true);
         }
 
         [ServerRpc]
