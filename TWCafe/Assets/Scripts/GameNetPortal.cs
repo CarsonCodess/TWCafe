@@ -96,7 +96,7 @@ namespace Game.Networking.Core
         {
             if(clientId == HostNetworkId && !GetNetworkManager.IsHost)
             {
-                await UserDisconnect();
+                //await UserDisconnect();
             }
             //await UserDisconnectServerRpc();
         }
@@ -107,6 +107,7 @@ namespace Game.Networking.Core
             var nm = GetNetworkManager;
             if(!nm.IsListening || nm.ShutdownInProgress)
                 return;
+            LoadOfflineScene();
             HideLobbyCode();
             if(nm.IsHost)
                 nm.ConnectionApprovalCallback -= HandleConnectionApproval;
@@ -114,7 +115,6 @@ namespace Game.Networking.Core
             await LeaveOrDeleteLobby();
             _connectionStatus = ConnectionStatus.UserDisconnect;
             nm.Shutdown();
-            LoadOfflineScene();
         }
         
         public async Task UserDisconnect()
@@ -122,6 +122,7 @@ namespace Game.Networking.Core
             var nm = GetNetworkManager;
             if(!nm.IsListening || nm.ShutdownInProgress)
                 return;
+            LoadOfflineScene();
             HideLobbyCode();
             if(nm.IsHost)
                 nm.ConnectionApprovalCallback -= HandleConnectionApproval;
@@ -129,7 +130,6 @@ namespace Game.Networking.Core
             await LeaveOrDeleteLobby();
             _connectionStatus = ConnectionStatus.UserDisconnect;
             nm.Shutdown();
-            LoadOfflineScene();
         }
 
         private async Task LeaveOrDeleteLobby()
