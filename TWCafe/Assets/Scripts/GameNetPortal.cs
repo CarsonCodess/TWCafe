@@ -94,9 +94,9 @@ namespace Game.Networking.Core
         
         private async void OnClientDisconnect(ulong clientId)
         {
-            if(GetNetworkManager.IsServer)
+            if(clientId == HostNetworkId && !GetNetworkManager.IsHost)
             {
-                
+                await UserDisconnectServerRpc();
             }
             //await UserDisconnectServerRpc();
         }
@@ -247,10 +247,7 @@ namespace Game.Networking.Core
     
         private void LoadOfflineScene()
         {
-            if(!GetNetworkManager.IsHost)
-                SwitchSceneServerRpc(offlineSceneName, false);
-            else
-                SwitchSceneServerRpc(offlineSceneName, true);
+            SwitchSceneServerRpc(offlineSceneName, false);
         }
 
         [ServerRpc]
