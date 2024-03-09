@@ -19,6 +19,8 @@ public class Customer : NetworkBehaviour
     
     private void WalkTowardsTable()
     {
+        if(!IsHost)
+            return;
         if(_seat)
             _waveManager.RemoveSeat(_seat);
         transform.DOMove(_seat != null ? _seat.transform.position : Vector3.zero, 5f).SetEase(Ease.Linear).OnComplete(() => 
@@ -30,6 +32,8 @@ public class Customer : NetworkBehaviour
 
     private void LeaveTable()
     {
+        if(!IsHost)
+            return;
         if(_seat)
             _waveManager.AddSeat(_seat);
         transform.DOMove(_waveManager.transform.position, 5f).OnComplete(() => {
