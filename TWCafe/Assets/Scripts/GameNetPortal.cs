@@ -104,7 +104,17 @@ namespace Game.Networking.Core
         [ClientRpc]
         public async Task UserDisconnectClientRpc()
         {
-            await UserDisconnect();
+            var nm = GetNetworkManager;
+            if(!nm.IsListening || nm.ShutdownInProgress)
+                return;
+            HideLobbyCode();
+            if(nm.IsHost)
+                nm.ConnectionApprovalCallback -= HandleConnectionApproval;
+
+            await LeaveOrDeleteLobby();
+            _connectionStatus = ConnectionStatus.UserDisconnect;
+            nm.Shutdown();
+            LoadOfflineScene();
         }
         
         public async Task UserDisconnect()
@@ -119,8 +129,7 @@ namespace Game.Networking.Core
             await LeaveOrDeleteLobby();
             _connectionStatus = ConnectionStatus.UserDisconnect;
             nm.Shutdown();
-            if(!nm.IsHost)
-                LoadOfflineScene();
+            LoadOfflineScene();
         }
 
         private async Task LeaveOrDeleteLobby()
