@@ -117,8 +117,8 @@ namespace Game.Networking.Core
             nm.Shutdown();
         }
 
-        [ServerRpc(RequireOwnership = false)]
-        private async Task DeSpawnClientServerRpc(ulong clientId)
+        [ServerRpc(RequireOwnership = true)]
+        private void DeSpawnClientServerRpc(ulong clientId)
         {
             var nm = GetNetworkManager;
             nm.ConnectedClients[clientId].PlayerObject.Despawn();
