@@ -98,6 +98,7 @@ namespace Game.Networking.Core
                 await UserDisconnectServerRpc();
         }
         
+        [ServerRpc]
         public async Task UserDisconnectServerRpc()
         {
             var nm = GetNetworkManager;
