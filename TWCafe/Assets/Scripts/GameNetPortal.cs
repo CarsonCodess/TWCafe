@@ -109,7 +109,10 @@ namespace Game.Networking.Core
                 nm.ConnectionApprovalCallback -= HandleConnectionApproval;
             await LeaveOrDeleteLobby();
             _connectionStatus = ConnectionStatus.UserDisconnect;
+            var host = nm.IsHost;
             nm.Shutdown();
+            if(!host)
+                LoadOfflineScene();
         }
 
         private async Task LeaveOrDeleteLobby()
