@@ -96,7 +96,7 @@ namespace Game.Networking.Core
         {
             if(clientId == HostNetworkId && !GetNetworkManager.IsHost && clientId != GetNetworkManager.LocalClientId)
             {
-                await UserDisconnect();
+                //await UserDisconnect();
             }
             
             //await UserDisconnectServerRpc();
