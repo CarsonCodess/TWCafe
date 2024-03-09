@@ -1483,7 +1483,7 @@ MonoBehaviour:
   enableSceneManagement: 1
   offlineSceneName: Menu
   onlineSceneName: Imated
-  debugMode: 1
+  debugMode: 0
   leaveOnEscape: 1
 --- !u!114 &1918097712
 MonoBehaviour:
@@ -1521,7 +1521,7 @@ MonoBehaviour:
     EnableNetworkLogs: 1
     OldPrefabList: []
   RunInBackground: 1
-  LogLevel: 1
+  LogLevel: 0
 --- !u!114 &1918097713
 MonoBehaviour:
   m_ObjectHideFlags: 0
