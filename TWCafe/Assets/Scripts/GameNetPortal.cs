@@ -119,8 +119,7 @@ namespace Game.Networking.Core
             _connectionStatus = ConnectionStatus.UserDisconnect;
             nm.Shutdown();
         }
-
-        [ServerRpc(RequireOwnership = true)]
+        
         private void DeSpawnClientServerRpc(ulong clientId)
         {
             var nm = GetNetworkManager;
