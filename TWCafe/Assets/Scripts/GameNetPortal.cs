@@ -249,7 +249,7 @@ namespace Game.Networking.Core
         
         private void LoadOnlineScene()
         {
-            SwitchSceneServerRpc(onlineSceneName, true, GetNetworkManager.IsHost);
+            SwitchSceneServerRpc(onlineSceneName, new ServerRpcParams(), true);
         }
     
         private void LoadOfflineScene()
@@ -259,28 +259,24 @@ namespace Game.Networking.Core
         }
 
         [ServerRpc]
-        private void SwitchSceneServerRpc(string sceneName, bool useNetworkSceneManager = true, bool isHost = false)
+        private void SwitchSceneServerRpc(string sceneName, bool useNetworkSceneManager = true)
         {
             if(!enableSceneManagement)
                 return;
             if (useNetworkSceneManager)
             {
-                if (isHost)
-                    GetNetworkManager.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+                GetNetworkManager.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
             }
             else
             {
-                if (isHost)
-                {
-                    var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
-                    LoadingScreen.Instance.LoadSceneOperation(op);
-                }
+                var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+                LoadingScreen.Instance.LoadSceneOperation(op);
             }
         }
 
         private void OnSceneEvent(SceneEvent sceneEvent)
         {
-            if(!GetNetworkManager.IsHost)
+            if(sceneEvent.ClientId != GetNetworkManager.LocalClientId)
                 return;
             LoadingScreen.Instance.LoadSceneOperation(sceneEvent.AsyncOperation);
         }
