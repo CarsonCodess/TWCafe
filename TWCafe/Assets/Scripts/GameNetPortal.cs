@@ -185,7 +185,7 @@ namespace Game.Networking.Core
             }
 
             ShowLobbyCode();
-            //LoadOnlineScene();
+            LoadOnlineScene();
             _connectionStatus = ConnectionStatus.Success;
             return lobby.LobbyCode;
         }
@@ -223,7 +223,7 @@ namespace Game.Networking.Core
             }
         
             GetNetworkManager.StartClient();
-            LoadOnlineScene();
+            //LoadOnlineScene();
             ShowLobbyCode();
             _connectionStatus = ConnectionStatus.Success;
         }
