@@ -115,7 +115,8 @@ public class GameNetPortal : MonoBehaviour
             GetNetworkManager.SceneManager.OnLoadEventCompleted -= OnLoadEventComplete;
         }
 
-        await LeaveOrDeleteLobby();
+        if(GameManager.Instance.GetGameType() == GameType.Multiplayer)
+            await LeaveOrDeleteLobby();
         _connectionStatus = ConnectionStatus.UserDisconnect;
         nm.Shutdown();
         LoadOfflineScene();
