@@ -96,7 +96,10 @@ public class GameNetPortal : MonoBehaviour
     private void OnClientDisconnect(ulong clientId)
     {
         if (clientId == HostNetworkId)
+        {
+            HideLobbyCode();
             LoadOfflineScene();
+        }
     }
 
     public async Task UserDisconnect()
@@ -179,11 +182,11 @@ public class GameNetPortal : MonoBehaviour
         }
 
         ShowLobbyCode();
-        StartNetworkGame(false);
+        StartNetworkGame();
         return lobby.LobbyCode;
     }
 
-    public void StartNetworkGame(bool singlePlayer = true)
+    public void StartNetworkGame()
     {
         GetNetworkManager.ConnectionApprovalCallback += HandleConnectionApproval;
         GetNetworkManager.StartHost();
