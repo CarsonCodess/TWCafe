@@ -249,7 +249,7 @@ namespace Game.Networking.Core
         
         private void LoadOnlineScene()
         {
-            SwitchSceneServerRpc(onlineSceneName, new ServerRpcParams(), true);
+            SwitchSceneServerRpc(onlineSceneName);
         }
     
         private void LoadOfflineScene()
