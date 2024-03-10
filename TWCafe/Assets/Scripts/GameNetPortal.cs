@@ -261,7 +261,7 @@ namespace Game.Networking.Core
         [ServerRpc]
         private void SwitchSceneServerRpc(string sceneName, bool useNetworkSceneManager = true)
         {
-            if(!enableSceneManagement || !GetNetworkManager.IsHost)
+            if(!enableSceneManagement)
                 return;
             if (useNetworkSceneManager)
                 GetNetworkManager.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
@@ -274,6 +274,8 @@ namespace Game.Networking.Core
 
         private void OnSceneEvent(SceneEvent sceneEvent)
         {
+            if(!GetNetworkManager.IsHost)
+                return;
             LoadingScreen.Instance.LoadSceneOperation(sceneEvent.AsyncOperation);
         }
         
