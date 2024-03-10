@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class Customer : NetworkBehaviour
 {
-    private Rigidbody2D _rb;
     private WaveManager _waveManager;
     private GameObject _seat;
+    private int _orderInQueue;
+    private GameObject _queuePosition;
+    private Tweener _moveToQueueTween;
 
     public void Initialize(int seat, WaveManager waveManager)
     {
         _waveManager = waveManager;
-        _seat = waveManager.seats.Count > 0 ? waveManager.seats[seat] : null;
-        _rb = GetComponent<Rigidbody2D>();
-        Invoke(nameof(LeaveTable), 12f);
+        _seat = seat != -1 ? waveManager.seats[seat] : null;
         WalkTowardsTable();
     }
     
@@ -23,14 +23,30 @@ public class Customer : NetworkBehaviour
             return;
         if(_seat)
             _waveManager.RemoveSeat(_seat);
-        transform.DOMove(_seat != null ? _seat.transform.position : Vector3.zero, 5f).SetEase(Ease.Linear).OnComplete(() => 
+        if (!_seat)
         {
-            if(!_seat)
-                LeaveTable();
-        });
+            if (_waveManager.IsQueueFull())
+                transform.DOMove(Vector2.zero, 5f).SetEase(Ease.Linear).OnComplete(() => LeaveCafe());
+            else
+                _waveManager.AddToQueue(this);
+                
+        }
+        else
+        {
+            transform.DOMove(_seat.transform.position, 5f).SetEase(Ease.Linear).OnComplete(() =>
+            {
+                Invoke(nameof(LeaveTable), 15f);
+            });
+        }
     }
 
     private void LeaveTable()
+    {
+        LeaveCafe(true);
+        _waveManager.MoveQueue();
+    }
+
+    private void LeaveCafe(bool leavingFromTable = false)
     {
         if(!IsHost)
             return;
@@ -38,6 +54,45 @@ public class Customer : NetworkBehaviour
             _waveManager.AddSeat(_seat);
         transform.DOMove(_waveManager.transform.position, 5f).OnComplete(() => {
             GetComponent<NetworkObject>().Despawn();
+        }).OnUpdate(() =>
+        {
+            if (!_waveManager.IsQueueFull() && !leavingFromTable)
+            {
+                transform.DOKill();
+                _waveManager.AddToQueue(this);
+            }
+        });
+    }
+
+    public bool IsFirstInQueue()
+    {
+        return _orderInQueue == 0;
+    }
+
+    public void MoveQueue()
+    {
+        if (_orderInQueue <= 0)
+            return;
+        var isMovingToQueue = _moveToQueueTween != null;
+        if (_moveToQueueTween == null)
+        {
+            _moveToQueueTween.Kill();
+            _moveToQueueTween = null;
+        }
+
+        _orderInQueue--;
+        _queuePosition = _waveManager.waitingQueuePositions[_orderInQueue];
+        transform.DOMove(_queuePosition.transform.position, isMovingToQueue ? 5f : 3f);
+    }
+
+    public void AddToQueue(int order, GameObject position)
+    {
+        _orderInQueue = order;
+        _queuePosition = position;
+        _moveToQueueTween = transform.DOMove(_queuePosition.transform.position, 5f).OnComplete(() =>
+        {
+            _moveToQueueTween.Kill();
+            _moveToQueueTween = null;
         });
     }
 }

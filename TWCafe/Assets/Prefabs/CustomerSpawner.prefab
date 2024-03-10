@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7068528527885631007}
   - component: {fileID: 2697585318126127989}
+  - component: {fileID: 6960225881222821236}
   - component: {fileID: 5703705609034500981}
   m_Layer: 0
   m_Name: CustomerSpawner
@@ -85,6 +86,26 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &6960225881222821236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1611376802277098342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1286268355
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!114 &5703705609034500981
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97,9 +118,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cfeca447f4b92544af09d390f6112c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WOL:
+  customers:
     list:
     - weight: 1
       obj: {fileID: 8573740195699891027, guid: 371f4ae33f8f6bd4798e6f617e809cd0, type: 3}
     - weight: 1
       obj: {fileID: 8392800126562801718, guid: 5afe83d6bc6bcf84a9887bf1dc11115f, type: 3}
+  seats:
+  - {fileID: 0}
+  - {fileID: 0}
