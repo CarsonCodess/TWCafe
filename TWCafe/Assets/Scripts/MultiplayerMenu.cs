@@ -1,4 +1,3 @@
-using Game.Networking.Core;
 using TMPro;
 using UnityEngine;
 
@@ -9,11 +8,13 @@ public class MultiplayerMenu : MonoBehaviour
 
     public async void Join()
     {
+        GameManager.Instance.SetGameType(GameType.Multiplayer);
         await GameNetPortal.Instance.StartClient(lobbyCodeField.text);
     }
     
     public async void Create()
     {
+        GameManager.Instance.SetGameType(GameType.Multiplayer);
         await GameNetPortal.Instance.StartHost(createLobbyField.text);
     }
 }

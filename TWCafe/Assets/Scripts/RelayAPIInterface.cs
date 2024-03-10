@@ -3,10 +3,7 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Services.Relay;
 using UnityEngine;
-
-namespace Game.Networking.Core.Interfaces
-{
-    public enum RelayConnectionStatus
+public enum RelayConnectionStatus
     {
         Success,
         Failed,
@@ -40,61 +37,60 @@ namespace Game.Networking.Core.Interfaces
         public byte[] Key;
     }
 
-    /// <summary>
-    /// Wrapper for all the interactions with the Relay API.
-    /// </summary>
-    public class RelayAPIInterface
+/// <summary>
+/// Wrapper for all the interactions with the Relay API.
+/// </summary>
+public class RelayAPIInterface
+{
+    public RelayHostData HostData;
+    public RelayClientData ClientData;
+    public RelayConnectionStatus RelayConnectionStatus { get; private set; }
+
+    public async Task<bool> StartRelayServer(int maxConnections, bool debug = false)
     {
-        public RelayHostData HostData;
-        public RelayClientData ClientData;
-        public RelayConnectionStatus RelayConnectionStatus { get; private set; }
+        if (debug)
+            Debug.Log("Starting Relay Server...");
+        RelayConnectionStatus = RelayConnectionStatus.StartingServer;
 
-        public async Task<bool> StartRelayServer(int maxConnections, bool debug = false)
+        var allocation = await Relay.Instance.CreateAllocationAsync(maxConnections, "us-central1");
+        HostData = new RelayHostData()
         {
-            if (debug)
-                Debug.Log("Starting Relay Server...");
-            RelayConnectionStatus = RelayConnectionStatus.StartingServer;
+            Key = allocation.Key,
+            Port = (ushort) allocation.RelayServer.Port,
+            AllocationIDBytes = allocation.AllocationIdBytes,
+            ConnectionData = allocation.ConnectionData,
+            IpV4Address = allocation.RelayServer.IpV4
+        };
 
-            var allocation = await Relay.Instance.CreateAllocationAsync(maxConnections, "us-central1");
-            HostData = new RelayHostData()
-            {
-                Key = allocation.Key,
-                Port = (ushort) allocation.RelayServer.Port,
-                AllocationIDBytes = allocation.AllocationIdBytes,
-                ConnectionData = allocation.ConnectionData,
-                IpV4Address = allocation.RelayServer.IpV4
-            };
+        HostData.JoinCode = await Relay.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
-            HostData.JoinCode = await Relay.Instance.GetJoinCodeAsync(allocation.AllocationId);
+        var utp = (UnityTransport) NetworkManager.Singleton.NetworkConfig.NetworkTransport;
+        utp.SetHostRelayData(HostData.IpV4Address, HostData.Port, HostData.AllocationIDBytes, HostData.Key,
+            HostData.ConnectionData);
 
-            var utp = (UnityTransport) NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-            utp.SetHostRelayData(HostData.IpV4Address, HostData.Port, HostData.AllocationIDBytes, HostData.Key,
-                HostData.ConnectionData);
-            
-            RelayConnectionStatus = RelayConnectionStatus.Success;
-            if (debug)
-                Debug.Log($"Started Relay Server: {HostData.JoinCode}");
-            return true;
-        }
+        RelayConnectionStatus = RelayConnectionStatus.Success;
+        if (debug)
+            Debug.Log($"Started Relay Server: {HostData.JoinCode}");
+        return true;
+    }
 
-        public async Task JoinRelayServer(string joinCode)
+    public async Task JoinRelayServer(string joinCode)
+    {
+        RelayConnectionStatus = RelayConnectionStatus.Connecting;
+        var allocation = await Relay.Instance.JoinAllocationAsync(joinCode);
+        ClientData = new RelayClientData()
         {
-            RelayConnectionStatus = RelayConnectionStatus.Connecting;
-            var allocation = await Relay.Instance.JoinAllocationAsync(joinCode);
-            ClientData = new RelayClientData()
-            {
-                Key = allocation.Key,
-                Port = (ushort) allocation.RelayServer.Port,
-                AllocationIDBytes = allocation.AllocationIdBytes,
-                ConnectionData = allocation.ConnectionData,
-                HostConnectionData = allocation.HostConnectionData,
-                IpV4Address = allocation.RelayServer.IpV4
-            };
+            Key = allocation.Key,
+            Port = (ushort) allocation.RelayServer.Port,
+            AllocationIDBytes = allocation.AllocationIdBytes,
+            ConnectionData = allocation.ConnectionData,
+            HostConnectionData = allocation.HostConnectionData,
+            IpV4Address = allocation.RelayServer.IpV4
+        };
 
-            var utp = (UnityTransport) NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-            utp.SetClientRelayData(ClientData.IpV4Address, ClientData.Port, ClientData.AllocationIDBytes,
-                ClientData.Key, ClientData.ConnectionData, ClientData.HostConnectionData);
-            RelayConnectionStatus = RelayConnectionStatus.Success;
-        }
+        var utp = (UnityTransport) NetworkManager.Singleton.NetworkConfig.NetworkTransport;
+        utp.SetClientRelayData(ClientData.IpV4Address, ClientData.Port, ClientData.AllocationIDBytes,
+            ClientData.Key, ClientData.ConnectionData, ClientData.HostConnectionData);
+        RelayConnectionStatus = RelayConnectionStatus.Success;
     }
 }
