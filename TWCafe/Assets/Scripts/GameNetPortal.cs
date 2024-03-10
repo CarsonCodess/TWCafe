@@ -178,8 +178,12 @@ namespace Game.Networking.Core
             
             GetNetworkManager.ConnectionApprovalCallback += HandleConnectionApproval;
             GetNetworkManager.StartHost();
-            GetNetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
-            GetNetworkManager.SceneManager.OnLoadEventCompleted += OnLoadEventComplete;
+            if (GetNetworkManager.IsHost)
+            {
+                GetNetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
+                GetNetworkManager.SceneManager.OnLoadEventCompleted += OnLoadEventComplete;
+            }
+
             ShowLobbyCode();
             LoadOnlineScene();
             _connectionStatus = ConnectionStatus.Success;
@@ -219,6 +223,7 @@ namespace Game.Networking.Core
             }
         
             GetNetworkManager.StartClient();
+            LoadOnlineScene();
             ShowLobbyCode();
             _connectionStatus = ConnectionStatus.Success;
         }
@@ -243,9 +248,15 @@ namespace Game.Networking.Core
         
         #region Scene Managment
         
-        private void LoadOnlineScene()
+        private void LoadOnlineScene(bool client = false)
         {
-            SwitchSceneServerRpc(onlineSceneName);
+            if (client)
+            {
+                var op = SceneManager.LoadSceneAsync(onlineSceneName, LoadSceneMode.Single);
+                LoadingScreen.Instance.LoadSceneOperation(op);
+            }
+            else
+                SwitchSceneServerRpc(onlineSceneName);
         }
     
         private void LoadOfflineScene()
