@@ -269,6 +269,8 @@ namespace Game.Networking.Core
                 GetNetworkManager.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
             else
             {
+                if(!GetNetworkManager.IsHost)
+                    return;
                 //SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
                 var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
                 LoadingScreen.Instance.LoadSceneOperation(op);
