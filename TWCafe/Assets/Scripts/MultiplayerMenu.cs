@@ -2,9 +2,10 @@ using Game.Networking.Core;
 using TMPro;
 using UnityEngine;
 
-public class MainMenu : MonoBehaviour
+public class MultiplayerMenu : MonoBehaviour
 {
     [SerializeField] private TMP_InputField lobbyCodeField;
+    [SerializeField] private TMP_InputField createLobbyField;
 
     public async void Join()
     {
@@ -13,6 +14,6 @@ public class MainMenu : MonoBehaviour
     
     public async void Create()
     {
-        await GameNetPortal.Instance.StartHost(lobbyCodeField.text);
+        await GameNetPortal.Instance.StartHost(createLobbyField.text);
     }
 }
