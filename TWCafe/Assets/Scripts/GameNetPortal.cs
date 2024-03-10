@@ -83,7 +83,7 @@ namespace Game.Networking.Core
             GetNetworkManager.OnClientDisconnectCallback += OnClientDisconnect;
         }
         
-        private void OnDisable()
+        private void OnDestroy()
         {
             if (GetNetworkManager)
                 GetNetworkManager.OnClientDisconnectCallback -= OnClientDisconnect;
@@ -255,8 +255,9 @@ namespace Game.Networking.Core
     
         private void LoadOfflineScene()
         {
-            var op = SceneManager.LoadSceneAsync(offlineSceneName, LoadSceneMode.Single);
-            LoadingScreen.Instance.LoadSceneOperation(op);
+            SceneManager.LoadScene(offlineSceneName, LoadSceneMode.Single);
+            //var op = SceneManager.LoadSceneAsync(offlineSceneName, LoadSceneMode.Single);
+            //LoadingScreen.Instance.LoadSceneOperation(op);
         }
 
         [ServerRpc]
@@ -268,8 +269,9 @@ namespace Game.Networking.Core
                 GetNetworkManager.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
             else
             {
-                var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
-                LoadingScreen.Instance.LoadSceneOperation(op);
+                SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+                // var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+                // LoadingScreen.Instance.LoadSceneOperation(op);
             }
         }
 
