@@ -108,8 +108,8 @@ namespace Game.Networking.Core
             if (nm.IsHost)
             {
                 nm.ConnectionApprovalCallback -= HandleConnectionApproval;
-                // GetNetworkManager.SceneManager.OnSceneEvent -= OnSceneEvent;
-                // GetNetworkManager.SceneManager.OnLoadEventCompleted -= OnLoadEventComplete;
+                GetNetworkManager.SceneManager.OnSceneEvent -= OnSceneEvent;
+                GetNetworkManager.SceneManager.OnLoadEventCompleted -= OnLoadEventComplete;
             }
 
             await LeaveOrDeleteLobby();
@@ -180,12 +180,12 @@ namespace Game.Networking.Core
             GetNetworkManager.StartHost();
             if (GetNetworkManager.IsHost)
             {
-                //GetNetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
-                //GetNetworkManager.SceneManager.OnLoadEventCompleted += OnLoadEventComplete;
+                GetNetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
+                GetNetworkManager.SceneManager.OnLoadEventCompleted += OnLoadEventComplete;
             }
 
             ShowLobbyCode();
-            LoadOnlineScene();
+            //LoadOnlineScene();
             _connectionStatus = ConnectionStatus.Success;
             return lobby.LobbyCode;
         }
@@ -255,9 +255,9 @@ namespace Game.Networking.Core
     
         private void LoadOfflineScene()
         {
-            SceneManager.LoadScene(offlineSceneName, LoadSceneMode.Single);
-            //var op = SceneManager.LoadSceneAsync(offlineSceneName, LoadSceneMode.Single);
-            //LoadingScreen.Instance.LoadSceneOperation(op);
+            //SceneManager.LoadScene(offlineSceneName, LoadSceneMode.Single);
+            var op = SceneManager.LoadSceneAsync(offlineSceneName, LoadSceneMode.Single);
+            LoadingScreen.Instance.LoadSceneOperation(op);
         }
 
         [ServerRpc]
@@ -269,21 +269,21 @@ namespace Game.Networking.Core
                 GetNetworkManager.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
             else
             {
-                SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
-                // var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
-                // LoadingScreen.Instance.LoadSceneOperation(op);
+                //SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+                var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+                LoadingScreen.Instance.LoadSceneOperation(op);
             }
         }
 
-        // private void OnSceneEvent(SceneEvent sceneEvent)
-        // {
-        //     LoadingScreen.Instance.LoadSceneOperation(sceneEvent.AsyncOperation);
-        // }
-        //
-        // private void OnLoadEventComplete(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
-        // {
-        //     LoadingScreen.Instance.Hide();
-        // }
+        private void OnSceneEvent(SceneEvent sceneEvent)
+        {
+            LoadingScreen.Instance.LoadSceneOperation(sceneEvent.AsyncOperation);
+        }
+        
+        private void OnLoadEventComplete(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
+        {
+            LoadingScreen.Instance.Hide();
+        }
         
         #endregion
 
