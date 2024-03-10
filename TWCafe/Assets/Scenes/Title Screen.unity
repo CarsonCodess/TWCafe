@@ -591,19 +591,19 @@ Canvas:
   m_GameObject: {fileID: 459942719}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 625399809}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_VertexColorAlwaysGammaSpace: 1
+  m_AdditionalShaderChannelsFlag: 31
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 435858911
+  m_SortingOrder: 999
   m_TargetDisplay: 0
 --- !u!1 &606357585
 GameObject:
@@ -1313,7 +1313,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -482.49994, y: 0}
+  m_AnchoredPosition: {x: -482.49988, y: 0}
   m_SizeDelta: {x: -965, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1164997207
@@ -2070,7 +2070,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -482.49994, y: 0}
+  m_AnchoredPosition: {x: -482.49988, y: 0}
   m_SizeDelta: {x: -965, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1548859517
@@ -2241,7 +2241,7 @@ MonoBehaviour:
   displayLobbyCode: 1
   lobbyCodeText: {fileID: 2075468645}
   enableSceneManagement: 1
-  offlineSceneName: Menu
+  offlineSceneName: MultiplayerMenu
   onlineSceneName: Imated
   debugMode: 0
   leaveOnEscape: 1
@@ -2538,8 +2538,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2753,7 +2753,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 1364857268}
   - {fileID: 625399810}
-  - {fileID: 1918097710}
   - {fileID: 1369256309}
   - {fileID: 657183332}
   - {fileID: 1023005848}
+  - {fileID: 1918097710}

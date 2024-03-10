@@ -108,8 +108,8 @@ namespace Game.Networking.Core
             if (nm.IsHost)
             {
                 nm.ConnectionApprovalCallback -= HandleConnectionApproval;
-                GetNetworkManager.SceneManager.OnSceneEvent -= OnSceneEvent;
-                GetNetworkManager.SceneManager.OnLoadEventCompleted -= OnLoadEventComplete;
+                // GetNetworkManager.SceneManager.OnSceneEvent -= OnSceneEvent;
+                // GetNetworkManager.SceneManager.OnLoadEventCompleted -= OnLoadEventComplete;
             }
 
             await LeaveOrDeleteLobby();
@@ -180,8 +180,8 @@ namespace Game.Networking.Core
             GetNetworkManager.StartHost();
             if (GetNetworkManager.IsHost)
             {
-                GetNetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
-                GetNetworkManager.SceneManager.OnLoadEventCompleted += OnLoadEventComplete;
+                //GetNetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
+                //GetNetworkManager.SceneManager.OnLoadEventCompleted += OnLoadEventComplete;
             }
 
             ShowLobbyCode();
@@ -248,15 +248,9 @@ namespace Game.Networking.Core
         
         #region Scene Managment
         
-        private void LoadOnlineScene(bool client = false)
+        private void LoadOnlineScene()
         {
-            if (client)
-            {
-                var op = SceneManager.LoadSceneAsync(onlineSceneName, LoadSceneMode.Single);
-                LoadingScreen.Instance.LoadSceneOperation(op);
-            }
-            else
-                SwitchSceneServerRpc(onlineSceneName);
+            SwitchSceneServerRpc(onlineSceneName);
         }
     
         private void LoadOfflineScene()
@@ -279,15 +273,15 @@ namespace Game.Networking.Core
             }
         }
 
-        private void OnSceneEvent(SceneEvent sceneEvent)
-        {
-            LoadingScreen.Instance.LoadSceneOperation(sceneEvent.AsyncOperation);
-        }
-
-        private void OnLoadEventComplete(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
-        {
-            LoadingScreen.Instance.Hide();
-        }
+        // private void OnSceneEvent(SceneEvent sceneEvent)
+        // {
+        //     LoadingScreen.Instance.LoadSceneOperation(sceneEvent.AsyncOperation);
+        // }
+        //
+        // private void OnLoadEventComplete(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
+        // {
+        //     LoadingScreen.Instance.Hide();
+        // }
         
         #endregion
 
