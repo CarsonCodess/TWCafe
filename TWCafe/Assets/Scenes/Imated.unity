@@ -1390,6 +1390,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 462078229677f6f4999bd625dccb7972, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dontDestroyOnLoad: 0
+  gameType: 0
   fps: 60
 --- !u!4 &1687489287
 Transform:

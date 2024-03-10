@@ -275,9 +275,7 @@ public class GameNetPortal : MonoBehaviour
         if (!enableSceneManagement)
             return;
         if (useNetworkSceneManager)
-        {
             GetNetworkManager.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
-        }
         else
         {
             var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);

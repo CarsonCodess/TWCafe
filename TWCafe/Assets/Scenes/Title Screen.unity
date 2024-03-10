@@ -5609,12 +5609,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 118a688af90f99245b52fb39b739650c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPlayerPrefab: 1
+  spawnPlayerPrefab: 0
   displayLobbyCode: 1
   lobbyCodeText: {fileID: 2075468645}
   enableSceneManagement: 1
   offlineSceneName: Title Screen
-  onlineSceneName: Imated
+  onlineSceneName: Ready Up
   debugMode: 0
   leaveOnEscape: 1
 --- !u!114 &1918097712
