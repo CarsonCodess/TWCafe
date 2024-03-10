@@ -83,9 +83,9 @@ namespace Game.Networking.Core
             GetNetworkManager.OnClientDisconnectCallback += OnClientDisconnect;
         }
         
-        private void OnDestroy()
+        private void OnDisable()
         {
-            if(GetNetworkManager)
+            if (GetNetworkManager)
                 GetNetworkManager.OnClientDisconnectCallback -= OnClientDisconnect;
         }
 
@@ -105,8 +105,13 @@ namespace Game.Networking.Core
             if(!nm.IsListening || nm.ShutdownInProgress)
                 return;
             HideLobbyCode();
-            if(nm.IsHost)
+            if (nm.IsHost)
+            {
                 nm.ConnectionApprovalCallback -= HandleConnectionApproval;
+                GetNetworkManager.SceneManager.OnSceneEvent -= OnSceneEvent;
+                GetNetworkManager.SceneManager.OnLoadEventCompleted -= OnLoadEventComplete;
+            }
+
             await LeaveOrDeleteLobby();
             _connectionStatus = ConnectionStatus.UserDisconnect;
             nm.Shutdown();
@@ -173,6 +178,8 @@ namespace Game.Networking.Core
             
             GetNetworkManager.ConnectionApprovalCallback += HandleConnectionApproval;
             GetNetworkManager.StartHost();
+            GetNetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
+            GetNetworkManager.SceneManager.OnLoadEventCompleted += OnLoadEventComplete;
             ShowLobbyCode();
             LoadOnlineScene();
             _connectionStatus = ConnectionStatus.Success;
@@ -243,7 +250,8 @@ namespace Game.Networking.Core
     
         private void LoadOfflineScene()
         {
-            SceneManager.LoadScene(offlineSceneName, LoadSceneMode.Single);
+            var op = SceneManager.LoadSceneAsync(offlineSceneName, LoadSceneMode.Single);
+            LoadingScreen.Instance.LoadSceneOperation(op);
         }
 
         [ServerRpc]
@@ -251,10 +259,23 @@ namespace Game.Networking.Core
         {
             if(!enableSceneManagement)
                 return;
-            if(useNetworkSceneManager)
+            if (useNetworkSceneManager)
                 GetNetworkManager.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
             else
-                SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+            {
+                var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+                LoadingScreen.Instance.LoadSceneOperation(op);
+            }
+        }
+
+        private void OnSceneEvent(SceneEvent sceneEvent)
+        {
+            LoadingScreen.Instance.LoadSceneOperation(sceneEvent.AsyncOperation);
+        }
+
+        private void OnLoadEventComplete(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
+        {
+            LoadingScreen.Instance.Hide();
         }
         
         #endregion
