@@ -93,7 +93,7 @@ namespace Game.Networking.Core
 
         #region Disconnecting
         
-        private async void OnClientDisconnect(ulong clientId)
+        private void OnClientDisconnect(ulong clientId)
         {
             if(clientId == HostNetworkId)
                 LoadOfflineScene();
