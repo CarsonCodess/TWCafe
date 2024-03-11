@@ -11,9 +11,6 @@ public class AuthenticationAPIInterface
         try
         {
             await UnityServices.InitializeAsync(initializationOptions);
-
-            if (!AuthenticationService.Instance.IsSignedIn)
-                await AuthenticationService.Instance.SignInAnonymouslyAsync();
         }
         catch (Exception e)
         {

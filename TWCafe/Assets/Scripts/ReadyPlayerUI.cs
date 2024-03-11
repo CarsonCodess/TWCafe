@@ -22,7 +22,7 @@ public class ReadyPlayerUI : NetworkBehaviour
             return;
         SetPlayerDataServerRpc(new PlayerReadyData()
         {
-            PlayerName = AuthenticationService.Instance.PlayerId,
+            PlayerName = AuthenticationService.Instance.PlayerInfo.Username,
             IsReady = false,
             ClientId = NetworkManager.LocalClientId
         });
@@ -38,7 +38,7 @@ public class ReadyPlayerUI : NetworkBehaviour
     {
         SetPlayerDataServerRpc(new PlayerReadyData()
         {
-            PlayerName = AuthenticationService.Instance.PlayerId,
+            PlayerName = AuthenticationService.Instance.PlayerInfo.Username,
             IsReady = !playerData.Value.IsReady,
             ClientId = NetworkManager.LocalClientId
         });
