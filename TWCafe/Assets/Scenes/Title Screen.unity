@@ -3513,7 +3513,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 55
+    m_Bits: 4294967295
 --- !u!114 &1023005846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5102,6 +5102,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dontDestroyOnLoad: 1
+  items:
+    m_Keys: 01000000
+    m_Values:
+    - {fileID: 11400000, guid: 2e6e71437729dd74aa9fdc7720e3f7cd, type: 2}
   gameType: 0
   fps: 60
 --- !u!4 &1364857268

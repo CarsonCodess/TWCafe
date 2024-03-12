@@ -8,7 +8,9 @@ public enum FoodItemType
 }
 
 [CreateAssetMenu(menuName = "Food Item")]
-public class FoodItem : ScriptableObject
+public class Item : ScriptableObject
 {
+    public int itemId;
     public FoodItemType foodType;
+    public GameObject prefab;
 }

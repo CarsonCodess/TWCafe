@@ -127,7 +127,7 @@ public class ReadyManager : NetworkBehaviour
         foreach (var client in NetworkManager.ConnectedClients)
         {
             var player = Instantiate(NetworkManager.NetworkConfig.PlayerPrefab);
-            player.GetComponent<NetworkObject>().SpawnWithOwnership(client.Key);
+            player.GetComponent<NetworkObject>().SpawnAsPlayerObject(client.Key);
         }
         NetworkManager.SceneManager.LoadScene(gameplaySceneName, LoadSceneMode.Single);
     }

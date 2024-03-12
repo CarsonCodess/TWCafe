@@ -8,7 +8,6 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : NetworkBehaviour
 {
-    
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float dashDistance = 5f;
     [SerializeField] private float dashTime = 0.25f;
@@ -21,7 +20,8 @@ public class PlayerController : NetworkBehaviour
     private float _dashTimer = 0;
     private bool _isDashing = false;
     private Rigidbody2D _rb;
-    private FoodItem _equippedItem;
+    private NetworkVariable<int> _equippedItem = new NetworkVariable<int>();
+    private NetworkVariable<bool> _interacting = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     private void Awake()
     {
@@ -49,9 +49,9 @@ public class PlayerController : NetworkBehaviour
             return;
         _moveDirection = _move.ReadValue<Vector2>();
         _dashTimer += Time.deltaTime;
-        if(_dashTimer >= 4){
+        if(_dashTimer >= 4)
             _canDash = true;
-        }
+        _interacting.Value = Keyboard.current.eKey.wasPressedThisFrame;
     }
 
     private void FixedUpdate()
@@ -77,18 +77,29 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    public void Pickup(FoodItem item)
+    public void Pickup(int item)
     {
-        _equippedItem = item;
+        SetEquippedItemServerRpc(item);
     }
     
     public void Drop()
     {
-        _equippedItem = null;
+        SetEquippedItemServerRpc(0);
     }
 
-    public FoodItem GetItem()
+    [ServerRpc]
+    private void SetEquippedItemServerRpc(int item)
     {
-        return _equippedItem;
+        _equippedItem.Value = item;
+    }
+    
+    public int GetItem()
+    {
+        return _equippedItem.Value;
+    }
+
+    public bool IsPressingInteract()
+    {
+        return _interacting.Value;
     }
 }

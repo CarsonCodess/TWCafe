@@ -81,6 +81,7 @@ public class GameNetPortal : MonoBehaviour
     private void Subscribe()
     {
         GetNetworkManager.OnClientDisconnectCallback += OnClientDisconnect;
+        SceneManager.sceneLoaded += (scene, mode) => LoadingScreen.Instance.Hide();
     }
 
     private void OnDestroy()
@@ -111,9 +112,9 @@ public class GameNetPortal : MonoBehaviour
         if (nm.IsHost)
         {
             nm.ConnectionApprovalCallback -= HandleConnectionApproval;
-            GetNetworkManager.SceneManager.OnSceneEvent -= OnSceneEvent;
-            GetNetworkManager.SceneManager.OnLoadEventCompleted -= OnLoadEventComplete;
         }
+        GetNetworkManager.SceneManager.OnSceneEvent -= OnSceneEvent;
+        GetNetworkManager.SceneManager.OnLoadEventCompleted -= OnLoadEventComplete;
 
         if(GameManager.Instance.GetGameType() == GameType.Multiplayer)
             await LeaveOrDeleteLobby();
@@ -191,12 +192,9 @@ public class GameNetPortal : MonoBehaviour
     {
         GetNetworkManager.ConnectionApprovalCallback += HandleConnectionApproval;
         GetNetworkManager.StartHost();
-        if (GetNetworkManager.IsHost)
-        {
-            GetNetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
-            GetNetworkManager.SceneManager.OnLoadEventCompleted += OnLoadEventComplete;
-        }
-        
+        GetNetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
+        GetNetworkManager.SceneManager.OnLoadEventCompleted += OnLoadEventComplete;
+
         LoadOnlineScene();
         _connectionStatus = ConnectionStatus.Success;
     }
@@ -234,6 +232,8 @@ public class GameNetPortal : MonoBehaviour
         }
 
         GetNetworkManager.StartClient();
+        GetNetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
+        GetNetworkManager.SceneManager.OnLoadEventCompleted += OnLoadEventComplete;
         ShowLobbyCode();
         _connectionStatus = ConnectionStatus.Success;
     }
