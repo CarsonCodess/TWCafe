@@ -11,28 +11,45 @@ public class AccountManager : Singleton<AccountManager>
     [SerializeField] private TMP_Text errorMessage;
     [SerializeField] private GameObject titleScreen;
 
-    public async void Login()
+    protected void Start()
+    {
+        if (PlayerPrefs.HasKey("_PASSWORD"))
+        {
+            var username = PlayerPrefs.GetString("_USERNAME");
+            var password = PlayerPrefs.GetString("_PASSWORD");
+            LoginInternal(username, password);
+        }
+    }
+
+    public void Login()
     {
         if (!AuthenticationService.Instance.IsSignedIn)
         {
-            try
-            {
-                await AuthenticationService.Instance.SignInWithUsernamePasswordAsync(usernameField.text, passwordField.text);
-            }
-            catch (AuthenticationException e)
-            {
-                errorMessage.text = $"{e.Message} [ERROR_CODE: {e.ErrorCode}]";
-                return;
-            }
-            catch (RequestFailedException e)
-            {
-                errorMessage.text = $"{e.Message} [ERROR_CODE: {e.ErrorCode}]";
-                return;
-            }
+            LoginInternal(usernameField.text, passwordField.text);
         }
-        
-        titleScreen.SetActive(true);
-        gameObject.SetActive(false);
+    }
+
+    private async void LoginInternal(string username, string password)
+    {
+        try
+        {
+            if (!PlayerPrefs.HasKey("_PASSWORD"))
+            {
+                PlayerPrefs.SetString("_USERNAME", usernameField.text);
+                PlayerPrefs.SetString("_PASSWORD", passwordField.text);
+            }
+            titleScreen.SetActive(true);
+            gameObject.SetActive(false);
+            await AuthenticationService.Instance.SignInWithUsernamePasswordAsync(username, password);
+        }
+        catch (AuthenticationException e)
+        {
+            errorMessage.text = $"{e.Message}";
+        }
+        catch (RequestFailedException e)
+        {
+            errorMessage.text = $"{e.Message}";
+        }
     }
 
     public async void CreateAccount()
@@ -46,17 +63,26 @@ public class AccountManager : Singleton<AccountManager>
             }
             catch (AuthenticationException e)
             {
-                errorMessage.text = $"{e.Message} [ERROR_CODE: {e.ErrorCode}]";
+                errorMessage.text = $"{e.Message}";
                 return;
             }
             catch (RequestFailedException e)
             {
-                errorMessage.text = $"{e.Message} [ERROR_CODE: {e.ErrorCode}]";
+                errorMessage.text = $"{e.Message}";
                 return;
             }
         }
         
         titleScreen.SetActive(true);
         gameObject.SetActive(false);
+    }
+
+    public void Logout()
+    {
+        PlayerPrefs.DeleteKey("_USERNAME");
+        PlayerPrefs.DeleteKey("_PASSWORD");
+        titleScreen.SetActive(false);
+        gameObject.SetActive(true);
+        AuthenticationService.Instance.SignOut(true);
     }
 }
