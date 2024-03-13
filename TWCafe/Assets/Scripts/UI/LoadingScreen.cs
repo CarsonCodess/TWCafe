@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,47 +9,52 @@ public class LoadingScreen : Singleton<LoadingScreen>
     [SerializeField] private Image fill;
     [SerializeField] private float maxRectValue;
     [SerializeField, Range(0f, 1f)] private float value;
-    private AsyncOperation _op;
+    [SerializeField, Range(0f, 10f)] private float loadTime = 2f;
+    [SerializeField, Range(0f, 10f)] private int steps = 3;
+    private float _timePerStep = -1;
+    private float _timer;
 
     public void Show()
     {
         content.SetActive(true);
     }
     
-    public void Hide()
+    private void Hide()
     {
         content.SetActive(false);
+        _timePerStep = -1;
     }
 
-    public void LoadSceneOperation(AsyncOperation operation)
+    public void LoadFake()
     {
         Show();
-        _op = operation;
+        value = 0f;
+        _timePerStep = loadTime / steps;
+        _timer = _timePerStep;
     }
 
     private void Update()
     {
         if (content.activeSelf)
         {
-            if (_op == null)
+            fill.rectTransform.sizeDelta = new Vector2(-Mathf.Lerp(0f, maxRectValue * 2, 1 - value),
+                fill.rectTransform.sizeDelta.y);
+            fill.rectTransform.anchoredPosition = new Vector2(-Mathf.Lerp(0f, maxRectValue, 1 - value),
+                fill.rectTransform.anchoredPosition.y);
+            if (value < 1)
             {
-                fill.rectTransform.sizeDelta = new Vector2(-Mathf.Lerp(0f, maxRectValue * 2, 1 - value),
-                    fill.rectTransform.sizeDelta.y);
-                fill.rectTransform.anchoredPosition = new Vector2(-Mathf.Lerp(0f, maxRectValue, 1 - value),
-                    fill.rectTransform.anchoredPosition.y);
-            }
-            else
-            {
-                fill.rectTransform.sizeDelta = new Vector2(-Mathf.Lerp(0f, maxRectValue * 2, 1 - _op.progress),
-                    fill.rectTransform.sizeDelta.y);
-                fill.rectTransform.anchoredPosition = new Vector2(-Mathf.Lerp(0f, maxRectValue, 1 - _op.progress),
-                    fill.rectTransform.anchoredPosition.y);
-                if (_op.isDone)
+                _timer += Time.deltaTime;
+                if (value < 1 && _timer >= _timePerStep)
                 {
-                    _op = null;
-                    Hide();
+                    DOVirtual.Float(value, value + _timePerStep, 0.15f, val =>
+                    {
+                        value = val;
+                    });
+                    _timer = 0f;
                 }
             }
+            else
+                Hide();
         }
     }
 

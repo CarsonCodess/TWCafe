@@ -3513,7 +3513,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
 --- !u!114 &1023005846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3597,6 +3597,8 @@ MonoBehaviour:
   fill: {fileID: 1115133145}
   maxRectValue: 910
   value: 0
+  loadTime: 0.5
+  steps: 3
 --- !u!1 &1115133143
 GameObject:
   m_ObjectHideFlags: 0

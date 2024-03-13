@@ -129,6 +129,7 @@ public class ReadyManager : NetworkBehaviour
             var player = Instantiate(NetworkManager.NetworkConfig.PlayerPrefab);
             player.GetComponent<NetworkObject>().SpawnAsPlayerObject(client.Key);
         }
+        LoadingScreen.Instance.LoadFake();
         NetworkManager.SceneManager.LoadScene(gameplaySceneName, LoadSceneMode.Single);
     }
 

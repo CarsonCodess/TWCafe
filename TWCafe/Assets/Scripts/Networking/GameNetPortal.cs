@@ -81,7 +81,6 @@ public class GameNetPortal : MonoBehaviour
     private void Subscribe()
     {
         GetNetworkManager.OnClientDisconnectCallback += OnClientDisconnect;
-        SceneManager.sceneLoaded += (scene, mode) => LoadingScreen.Instance.Hide();
     }
 
     private void OnDestroy()
@@ -113,14 +112,13 @@ public class GameNetPortal : MonoBehaviour
         {
             nm.ConnectionApprovalCallback -= HandleConnectionApproval;
         }
-        GetNetworkManager.SceneManager.OnSceneEvent -= OnSceneEvent;
-        GetNetworkManager.SceneManager.OnLoadEventCompleted -= OnLoadEventComplete;
 
         if(GameManager.Instance.GetGameType() == GameType.Multiplayer)
             await LeaveOrDeleteLobby();
         _connectionStatus = ConnectionStatus.UserDisconnect;
         nm.Shutdown();
         LoadOfflineScene();
+        LoadingScreen.Instance.LoadFake();
     }
 
     private async Task LeaveOrDeleteLobby()
@@ -192,9 +190,7 @@ public class GameNetPortal : MonoBehaviour
     {
         GetNetworkManager.ConnectionApprovalCallback += HandleConnectionApproval;
         GetNetworkManager.StartHost();
-        GetNetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
-        GetNetworkManager.SceneManager.OnLoadEventCompleted += OnLoadEventComplete;
-
+        LoadingScreen.Instance.LoadFake();
         LoadOnlineScene();
         _connectionStatus = ConnectionStatus.Success;
     }
@@ -232,8 +228,7 @@ public class GameNetPortal : MonoBehaviour
         }
 
         GetNetworkManager.StartClient();
-        GetNetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
-        GetNetworkManager.SceneManager.OnLoadEventCompleted += OnLoadEventComplete;
+        LoadingScreen.Instance.LoadFake();
         ShowLobbyCode();
         _connectionStatus = ConnectionStatus.Success;
     }
@@ -266,7 +261,7 @@ public class GameNetPortal : MonoBehaviour
     private void LoadOfflineScene()
     {
         var op = SceneManager.LoadSceneAsync(offlineSceneName, LoadSceneMode.Single);
-        LoadingScreen.Instance.LoadSceneOperation(op);
+        LoadingScreen.Instance.LoadFake();
     }
 
     [ServerRpc]
@@ -278,24 +273,10 @@ public class GameNetPortal : MonoBehaviour
             GetNetworkManager.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
         else
         {
-            var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
-            LoadingScreen.Instance.LoadSceneOperation(op);
+            //var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+            LoadingScreen.Instance.LoadFake();
         }
     }
-
-    private void OnSceneEvent(SceneEvent sceneEvent)
-    {
-        if (sceneEvent.ClientId != GetNetworkManager.LocalClientId)
-            return;
-        LoadingScreen.Instance.LoadSceneOperation(sceneEvent.AsyncOperation);
-    }
-
-    private void OnLoadEventComplete(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted,
-        List<ulong> clientsTimedOut)
-    {
-        LoadingScreen.Instance.Hide();
-    }
-
     #endregion
 
     #region Lobby Heartbeat
