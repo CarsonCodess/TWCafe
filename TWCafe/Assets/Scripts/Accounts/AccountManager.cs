@@ -17,7 +17,7 @@ public class AccountManager : Singleton<AccountManager>
         {
             var username = PlayerPrefs.GetString("_USERNAME");
             var password = PlayerPrefs.GetString("_PASSWORD");
-            LoginInternal(username, password);
+            LoginInternal(username, password); 
         }
     }
 
