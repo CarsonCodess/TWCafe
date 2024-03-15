@@ -11,13 +11,28 @@ public class AccountManager : Singleton<AccountManager>
     [SerializeField] private TMP_Text errorMessage;
     [SerializeField] private GameObject titleScreen;
 
-    protected void Start()
+    protected async void Start()
     {
         if (PlayerPrefs.HasKey("_PASSWORD"))
         {
             var username = PlayerPrefs.GetString("_USERNAME");
             var password = PlayerPrefs.GetString("_PASSWORD");
-            LoginInternal(username, password); 
+            try
+            {
+                await AuthenticationService.Instance.SignInWithUsernamePasswordAsync(username, password);
+            }
+            catch (AuthenticationException e)
+            {
+                errorMessage.text = $"{e.Message}";
+                return;
+            }
+            catch (RequestFailedException e)
+            {
+                errorMessage.text = $"{e.Message}";
+                return;
+            }
+            titleScreen.SetActive(true);
+            gameObject.SetActive(false);
         }
     }
 
