@@ -125,16 +125,25 @@ public class ReadyManager : NetworkBehaviour
 
     public async void StartGame()
     {
+        StartLoadingScreenClientRpc();
+        LoadingScreen.Instance.LoadFake();
         foreach (var client in NetworkManager.ConnectedClients)
         {
             var player = Instantiate(NetworkManager.NetworkConfig.PlayerPrefab);
             player.GetComponent<NetworkObject>().SpawnAsPlayerObject(client.Key);
         }
-
+        
         var lobbyApi = GameNetPortal.Instance.GetLobbyAPIInterface;
-        await lobbyApi.UpdateLobby(lobbyApi.JoinedLobby.LobbyCode, new Dictionary<string, DataObject>(), true);
-        LoadingScreen.Instance.LoadFake();
+        await lobbyApi.UpdateLobby(lobbyApi.JoinedLobby.Id, new Dictionary<string, DataObject>(), true);
         NetworkManager.SceneManager.LoadScene(gameplaySceneName, LoadSceneMode.Single);
+    }
+
+    [ClientRpc]
+    private void StartLoadingScreenClientRpc()
+    {
+        if(NetworkManager.LocalClientId == 0)
+            return;
+        LoadingScreen.Instance.LoadFake();
     }
 
     public async void LeaveLobby()
