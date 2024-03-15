@@ -35,21 +35,24 @@ public class AccountManager : Singleton<AccountManager>
         {
             if (!PlayerPrefs.HasKey("_PASSWORD"))
             {
-                PlayerPrefs.SetString("_USERNAME", usernameField.text);
-                PlayerPrefs.SetString("_PASSWORD", passwordField.text);
+                await AuthenticationService.Instance.SignInWithUsernamePasswordAsync(username, password);
             }
-            titleScreen.SetActive(true);
-            gameObject.SetActive(false);
-            await AuthenticationService.Instance.SignInWithUsernamePasswordAsync(username, password);
         }
         catch (AuthenticationException e)
         {
             errorMessage.text = $"{e.Message}";
+            return;
         }
         catch (RequestFailedException e)
         {
             errorMessage.text = $"{e.Message}";
+            return;
         }
+        
+        PlayerPrefs.SetString("_USERNAME", usernameField.text);
+        PlayerPrefs.SetString("_PASSWORD", passwordField.text);
+        titleScreen.SetActive(true);
+        gameObject.SetActive(false);
     }
 
     public async void CreateAccount()
