@@ -118,6 +118,25 @@ public class LobbyAPIInterface
             LobbyConnectionStatus = LobbyConnectionStatus.Disconnect;
         }
     }
+    
+    public async Task<Lobby> UpdateLobby(string lobbyId, Dictionary<string, DataObject> data, bool shouldLock)
+    {
+        var updateOptions = new UpdateLobbyOptions()
+        {
+            Data = data,
+            IsLocked = shouldLock
+        };
+
+        try
+        {
+            return await Lobbies.Instance.UpdateLobbyAsync(lobbyId, updateOptions);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e.Reason);
+            throw;
+        }
+    }
 
     public async void SendHeartbeatPing(string lobbyId)
     {

@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -122,13 +123,16 @@ public class ReadyManager : NetworkBehaviour
         }
     }
 
-    public void StartGame()
+    public async void StartGame()
     {
         foreach (var client in NetworkManager.ConnectedClients)
         {
             var player = Instantiate(NetworkManager.NetworkConfig.PlayerPrefab);
             player.GetComponent<NetworkObject>().SpawnAsPlayerObject(client.Key);
         }
+
+        var lobbyApi = GameNetPortal.Instance.GetLobbyAPIInterface;
+        await lobbyApi.UpdateLobby(lobbyApi.JoinedLobby.LobbyCode, new Dictionary<string, DataObject>(), true);
         LoadingScreen.Instance.LoadFake();
         NetworkManager.SceneManager.LoadScene(gameplaySceneName, LoadSceneMode.Single);
     }
