@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,26 +8,29 @@ public class Pickup : NetworkBehaviour
 {
     [SerializeField] private Item item;
     
-    private PlayerController _player;
+    private List<PlayerController> _players = new List<PlayerController>();
 
     private void OnTriggerEnter2D(Collider2D col)
     {
         if (col.CompareTag("Player"))
-            _player = col.GetComponent<PlayerController>();
+            _players.Add(col.GetComponent<PlayerController>());
     }
     
     private void OnTriggerExit2D(Collider2D col)
     {
         if (col.CompareTag("Player"))
-            _player = null;
+            _players.Remove(col.GetComponent<PlayerController>());
     }
 
     private void Update()
     {
-        if (Keyboard.current.eKey.wasPressedThisFrame && _player != null)
+        foreach (var player in _players)
         {
-            _player.Pickup(item.itemId);
-            DespawnSelfServerRpc();
+            if (player.IsPressingInteract())
+            {
+                player.Pickup(item.itemId);
+                DespawnSelfServerRpc();
+            }
         }
     }
 
