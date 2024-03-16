@@ -12,16 +12,6 @@ using UnityEngine.SceneManagement;
 [HideMonoScript, InfoBox("Debug Mode Enabled! Make sure to disable it before building!", InfoMessageType.Warning, nameof(debugMode))]
 public class GameNetPortal : MonoBehaviour
 {
-    public enum ConnectionStatus
-    {
-        Idle,
-        Success,
-        LobbyFull,
-        UserDisconnect,
-        RelayFailure,
-        LobbyFailure
-    }
-
     public static GameNetPortal Instance;
 
     public static readonly ulong HostNetworkId = 0;
@@ -30,22 +20,15 @@ public class GameNetPortal : MonoBehaviour
     public RelayAPIInterface GetRelayAPIInterface => _relayAPIInterface;
     public AuthenticationAPIInterface GetAuthenticationAPIInterface => _authenticationAPIInterface;
     public NetworkManager GetNetworkManager => NetworkManager.Singleton;
+    
+    [Header("UI")] 
+    [SerializeField] private bool displayLobbyCode;
+    [SerializeField, ShowIf(nameof(displayLobbyCode))] private TMP_Text lobbyCodeText;
 
-    [ShowInInspector, ReadOnly] private ConnectionStatus _connectionStatus;
-    [Header("Options")] [SerializeField] private bool spawnPlayerPrefab;
-    [Header("UI")] [SerializeField] private bool displayLobbyCode;
-
-    [SerializeField, ShowIf(nameof(displayLobbyCode))]
-    private TMP_Text lobbyCodeText;
-
-    [Header("Scene Management")] [SerializeField]
-    private bool enableSceneManagement = true;
-
-    [SerializeField, ShowIf(nameof(enableSceneManagement))]
-    private string offlineSceneName;
-
-    [SerializeField, ShowIf(nameof(enableSceneManagement))]
-    private string onlineSceneName;
+    [Header("Scene Management")]
+    [SerializeField] private string offlineSceneName;
+    [SerializeField] private string onlineSceneName;
+    [SerializeField] private string singlePlayerSceneName;
 
     [Header("Debug")] [SerializeField] private bool debugMode = true;
     [SerializeField] private bool leaveOnEscape = true;
@@ -75,7 +58,6 @@ public class GameNetPortal : MonoBehaviour
     {
         await _authenticationAPIInterface.InitializeAndSignInAsync();
         Subscribe();
-        _connectionStatus = ConnectionStatus.Idle;
     }
 
     private void Subscribe()
@@ -102,7 +84,7 @@ public class GameNetPortal : MonoBehaviour
         }
     }
 
-    public async Task UserDisconnect()
+    public async Task Disconnect()
     {
         var nm = GetNetworkManager;
         if (!nm.IsListening || nm.ShutdownInProgress)
@@ -115,7 +97,6 @@ public class GameNetPortal : MonoBehaviour
 
         if(GameManager.Instance.GetGameType() == GameType.Multiplayer)
             await LeaveOrDeleteLobby();
-        _connectionStatus = ConnectionStatus.UserDisconnect;
         nm.Shutdown();
         LoadOfflineScene();
         LoadingScreen.Instance.LoadFake();
@@ -145,14 +126,13 @@ public class GameNetPortal : MonoBehaviour
 
     #region Joinig/Creating
 
-    private void HandleConnectionApproval(NetworkManager.ConnectionApprovalRequest request,
-        NetworkManager.ConnectionApprovalResponse response)
+    private void HandleConnectionApproval(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
-        response.CreatePlayerObject = spawnPlayerPrefab;
+        response.CreatePlayerObject = GameManager.Instance.GetGameType() == GameType.Singleplayer;
         response.Approved = true;
     }
 
-    public async Task<string> StartHost(string lobbyName, int maxPlayers = 4, bool isPrivate = false)
+    public async Task<string> CreateGame(string lobbyName, int maxPlayers = 4)
     {
         if (maxPlayers <= 0 || string.IsNullOrWhiteSpace(lobbyName))
             return "";
@@ -160,13 +140,10 @@ public class GameNetPortal : MonoBehaviour
         var relayStarted = await _relayAPIInterface.StartRelayServer(maxPlayers, debugMode);
 
         if (!relayStarted)
-        {
-            _connectionStatus = ConnectionStatus.RelayFailure;
             return "";
-        }
 
         var lobby = await _lobbyAPIInterface.CreateLobby(AuthenticationService.Instance.PlayerId, lobbyName, maxPlayers,
-            isPrivate,
+            false,
             new Dictionary<string, PlayerDataObject>(), new Dictionary<string, DataObject>()
             {
                 {
@@ -176,23 +153,14 @@ public class GameNetPortal : MonoBehaviour
             }, debugMode);
 
         if (_lobbyAPIInterface.LobbyConnectionStatus == LobbyConnectionStatus.Failed)
-        {
-            _connectionStatus = ConnectionStatus.LobbyFailure;
             return "";
-        }
-
-        ShowLobbyCode();
-        StartNetworkGame();
-        return lobby.LobbyCode;
-    }
-
-    public void StartNetworkGame()
-    {
+        
         GetNetworkManager.ConnectionApprovalCallback += HandleConnectionApproval;
         GetNetworkManager.StartHost();
         LoadingScreen.Instance.LoadFake();
         LoadOnlineScene();
-        _connectionStatus = ConnectionStatus.Success;
+        ShowLobbyCode();
+        return lobby.LobbyCode;
     }
 
     public async Task StartClient(string lobbyCode)
@@ -205,32 +173,32 @@ public class GameNetPortal : MonoBehaviour
 
         if (lobby.Players.Count > lobby.MaxPlayers)
         {
-            _connectionStatus = ConnectionStatus.LobbyFull;
             if (debugMode)
                 Debug.Log("Can not join! Lobby Full!");
             return;
         }
 
         if (_lobbyAPIInterface.LobbyConnectionStatus == LobbyConnectionStatus.Failed)
-        {
-            _connectionStatus = ConnectionStatus.LobbyFailure;
             return;
-        }
 
         var relayJoinCode = lobby.Data["joinCode"].Value;
 
         await _relayAPIInterface.JoinRelayServer(relayJoinCode);
 
         if (_relayAPIInterface.RelayConnectionStatus == RelayConnectionStatus.Failed)
-        {
-            _connectionStatus = ConnectionStatus.RelayFailure;
             return;
-        }
 
         GetNetworkManager.StartClient();
         LoadingScreen.Instance.LoadFake();
         ShowLobbyCode();
-        _connectionStatus = ConnectionStatus.Success;
+    }
+    
+    public void StartSingleplayerGame()
+    {
+        GetNetworkManager.ConnectionApprovalCallback += HandleConnectionApproval;
+        GetNetworkManager.StartHost();
+        LoadingScreen.Instance.LoadFake();
+        LoadSingleplayerScene();
     }
 
     #endregion
@@ -253,29 +221,27 @@ public class GameNetPortal : MonoBehaviour
 
     #region Scene Managment
 
+    private void LoadSingleplayerScene()
+    {
+        SceneManager.LoadSceneAsync(singlePlayerSceneName, LoadSceneMode.Single);
+        LoadingScreen.Instance.LoadFake();
+    }
+    
     private void LoadOnlineScene()
     {
-        SwitchSceneServerRpc(onlineSceneName);
+        LoadOnlineSceneServerRpc();
     }
 
     private void LoadOfflineScene()
     {
-        var op = SceneManager.LoadSceneAsync(offlineSceneName, LoadSceneMode.Single);
+        SceneManager.LoadSceneAsync(offlineSceneName, LoadSceneMode.Single);
         LoadingScreen.Instance.LoadFake();
     }
 
     [ServerRpc]
-    private void SwitchSceneServerRpc(string sceneName, bool useNetworkSceneManager = true)
+    private void LoadOnlineSceneServerRpc()
     {
-        if (!enableSceneManagement)
-            return;
-        if (useNetworkSceneManager)
-            GetNetworkManager.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
-        else
-        {
-            //var op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
-            LoadingScreen.Instance.LoadFake();
-        }
+        GetNetworkManager.SceneManager.LoadScene(onlineSceneName, LoadSceneMode.Single);
     }
     #endregion
 
@@ -287,7 +253,7 @@ public class GameNetPortal : MonoBehaviour
             UpdateLobbyHeartbeat();
         if (leaveOnEscape && Input.GetKeyDown(KeyCode.Escape))
         {
-            await UserDisconnect();
+            await Disconnect();
         }
     }
 

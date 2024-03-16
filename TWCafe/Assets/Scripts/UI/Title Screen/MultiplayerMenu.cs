@@ -15,6 +15,6 @@ public class MultiplayerMenu : MonoBehaviour
     public async void Create()
     {
         GameManager.Instance.SetGameType(GameType.Multiplayer);
-        await GameNetPortal.Instance.StartHost(createLobbyField.text);
+        await GameNetPortal.Instance.CreateGame(createLobbyField.text);
     }
 }

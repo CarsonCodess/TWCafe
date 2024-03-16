@@ -148,6 +148,6 @@ public class ReadyManager : NetworkBehaviour
 
     public async void LeaveLobby()
     {
-        await GameNetPortal.Instance.UserDisconnect();
+        await GameNetPortal.Instance.Disconnect();
     }
 }

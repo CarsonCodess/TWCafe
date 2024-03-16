@@ -10,7 +10,7 @@ public class MainMenu : MonoBehaviour
     public void StartSinglePlayer()
     {
         GameManager.Instance.SetGameType(GameType.Singleplayer);
-        GameNetPortal.Instance.StartNetworkGame();
+        GameNetPortal.Instance.StartSingleplayerGame();
     }
     
     public void LoadSingleplayerScreen()
