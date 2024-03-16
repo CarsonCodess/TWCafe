@@ -78,11 +78,15 @@ public class PlayerController : NetworkBehaviour
 
     public void Pickup(int item)
     {
+        if(!IsOwner)
+            return;
         SetEquippedItemServerRpc(item);
     }
     
     public void Drop()
     {
+        if(!IsOwner)
+            return;
         SetEquippedItemServerRpc(0);
     }
 
