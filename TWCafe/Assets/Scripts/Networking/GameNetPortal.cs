@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -9,7 +11,6 @@ using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[HideMonoScript, InfoBox("Debug Mode Enabled! Make sure to disable it before building!", InfoMessageType.Warning, nameof(debugMode))]
 public class GameNetPortal : MonoBehaviour
 {
     public static GameNetPortal Instance;
@@ -30,7 +31,7 @@ public class GameNetPortal : MonoBehaviour
     [SerializeField] private string onlineSceneName;
     [SerializeField] private string singlePlayerSceneName;
 
-    [Header("Debug")] [SerializeField] private bool debugMode = true;
+    [Header("Debug")]
     [SerializeField] private bool leaveOnEscape = true;
 
     private LobbyAPIInterface _lobbyAPIInterface;
@@ -109,17 +110,9 @@ public class GameNetPortal : MonoBehaviour
         var lobby = _lobbyAPIInterface.JoinedLobby;
         var joinedLobbyID = lobby.Id;
         if (lobby.Players.Count <= 1 || NetworkManager.Singleton.IsHost)
-        {
             await _lobbyAPIInterface.DeleteLobby(joinedLobbyID);
-            if (debugMode)
-                Debug.Log($"Deleted the lobby with the ID {joinedLobbyID}.");
-        }
         else
-        {
             await _lobbyAPIInterface.RemovePlayerFromLobby(AuthenticationService.Instance.PlayerId, joinedLobbyID);
-            if (debugMode)
-                Debug.Log($"{AuthenticationService.Instance.PlayerId} has left the lobby.");
-        }
     }
 
     #endregion
@@ -132,17 +125,13 @@ public class GameNetPortal : MonoBehaviour
         response.Approved = true;
     }
 
-    public async Task<string> CreateGame(string lobbyName, int maxPlayers = 4)
+    public async Task<string> CreateGame()
     {
-        if (maxPlayers <= 0 || string.IsNullOrWhiteSpace(lobbyName))
-            return "";
-
-        var relayStarted = await _relayAPIInterface.StartRelayServer(maxPlayers, debugMode);
-
+        var relayStarted = await _relayAPIInterface.StartRelayServer(4);
         if (!relayStarted)
             return "";
 
-        var lobby = await _lobbyAPIInterface.CreateLobby(AuthenticationService.Instance.PlayerId, lobbyName, maxPlayers,
+        var lobby = await _lobbyAPIInterface.CreateLobby(AuthenticationService.Instance.PlayerId, GenerateRandomString(16), 4,
             false,
             new Dictionary<string, PlayerDataObject>(), new Dictionary<string, DataObject>()
             {
@@ -150,11 +139,8 @@ public class GameNetPortal : MonoBehaviour
                     "joinCode",
                     new DataObject(DataObject.VisibilityOptions.Member, _relayAPIInterface.HostData.JoinCode)
                 }
-            }, debugMode);
+            });
 
-        if (_lobbyAPIInterface.LobbyConnectionStatus == LobbyConnectionStatus.Failed)
-            return "";
-        
         GetNetworkManager.ConnectionApprovalCallback += HandleConnectionApproval;
         GetNetworkManager.StartHost();
         LoadingScreen.Instance.LoadFake();
@@ -165,27 +151,19 @@ public class GameNetPortal : MonoBehaviour
 
     public async Task StartClient(string lobbyCode)
     {
-        if (lobbyCode.Length != 6)
-            return;
         var lobby = await _lobbyAPIInterface.JoinLobbyByCode(AuthenticationService.Instance.PlayerId, lobbyCode, null);
         if (lobby.IsLocked)
             return;
 
         if (lobby.Players.Count > lobby.MaxPlayers)
         {
-            if (debugMode)
-                Debug.Log("Can not join! Lobby Full!");
+            Debug.Log("Can not join! Lobby Full!");
             return;
         }
 
-        if (_lobbyAPIInterface.LobbyConnectionStatus == LobbyConnectionStatus.Failed)
-            return;
-
         var relayJoinCode = lobby.Data["joinCode"].Value;
-
-        await _relayAPIInterface.JoinRelayServer(relayJoinCode);
-
-        if (_relayAPIInterface.RelayConnectionStatus == RelayConnectionStatus.Failed)
+        var relayStarted = await _relayAPIInterface.JoinRelayServer(relayJoinCode);
+        if (!relayStarted)
             return;
 
         GetNetworkManager.StartClient();
@@ -264,9 +242,21 @@ public class GameNetPortal : MonoBehaviour
         {
             _heartbeatTime -= HeartbeatPeriod;
             _lobbyAPIInterface.SendHeartbeatPing(_lobbyAPIInterface.JoinedLobby.Id);
-            if (debugMode)
-                Debug.Log($"Sent a ping to the lobby with the ID {_lobbyAPIInterface.JoinedLobby.Id}.");
         }
+    }
+
+    #endregion
+
+    #region Utilities
+
+    public string GenerateRandomString(int length)
+    {
+        var glyphs= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var charAmount = Random.Range(length + 5, length - 5);
+        var sb = new StringBuilder(charAmount);
+        for(var i = 0; i < charAmount; i++)
+            sb.Append(glyphs[Random.Range(0, glyphs.Length)]);
+        return sb.ToString();
     }
 
     #endregion

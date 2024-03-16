@@ -51,10 +51,7 @@ public class AccountManager : Singleton<AccountManager>
     {
         try
         {
-            if (!PlayerPrefs.HasKey("_PASSWORD"))
-            {
-                await AuthenticationService.Instance.SignInWithUsernamePasswordAsync(username, password);
-            }
+            await AuthenticationService.Instance.SignInWithUsernamePasswordAsync(username, password);
         }
         catch (AuthenticationException e)
         {

@@ -126,7 +126,6 @@ public class ReadyManager : NetworkBehaviour
     public async void StartGame()
     {
         StartLoadingScreenClientRpc();
-        LoadingScreen.Instance.LoadFake();
         foreach (var client in NetworkManager.ConnectedClients)
         {
             var player = Instantiate(NetworkManager.NetworkConfig.PlayerPrefab);
@@ -141,8 +140,6 @@ public class ReadyManager : NetworkBehaviour
     [ClientRpc]
     private void StartLoadingScreenClientRpc()
     {
-        if(NetworkManager.LocalClientId == 0)
-            return;
         LoadingScreen.Instance.LoadFake();
     }
 

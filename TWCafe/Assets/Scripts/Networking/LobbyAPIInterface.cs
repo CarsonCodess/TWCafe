@@ -21,16 +21,10 @@ using UnityEngine;
 public class LobbyAPIInterface
 {
     public Lobby JoinedLobby;
-    public LobbyConnectionStatus LobbyConnectionStatus { get; private set; }
 
     public async Task<Lobby> CreateLobby(string requesterUasId, string lobbyName, int maxPlayers, bool isPrivate,
-        Dictionary<string, PlayerDataObject> hostUserData, Dictionary<string, DataObject> lobbyData,
-        bool debug = false)
+        Dictionary<string, PlayerDataObject> hostUserData, Dictionary<string, DataObject> lobbyData)
     {
-        LobbyConnectionStatus = LobbyConnectionStatus.Creating;
-        if (debug)
-            Debug.Log("Creating Lobby...");
-
         var createOptions = new CreateLobbyOptions()
         {
             IsPrivate = isPrivate,
@@ -48,20 +42,15 @@ public class LobbyAPIInterface
         {
             var reason = $"{e.Message} ({e.InnerException?.Message})";
             Debug.LogError($"Lobby Error: {reason}, {e}");
-            LobbyConnectionStatus = LobbyConnectionStatus.Failed;
             throw;
         }
-
-        if (debug)
-            Debug.Log($"Created Lobby: {lobby.LobbyCode}");
+        
         JoinedLobby = lobby;
-        LobbyConnectionStatus = LobbyConnectionStatus.Success;
         return lobby;
     }
 
     public async Task DeleteLobby(string lobbyId)
     {
-        LobbyConnectionStatus = LobbyConnectionStatus.Deleting;
         try
         {
             await Lobbies.Instance.DeleteLobbyAsync(lobbyId);
@@ -69,19 +58,16 @@ public class LobbyAPIInterface
         catch (Exception e)
         {
             var reason = $"{e.Message} ({e.InnerException?.Message})";
-            LobbyConnectionStatus = LobbyConnectionStatus.Failed;
             Debug.LogError($"Lobby Error: {reason}");
             throw;
         }
 
         JoinedLobby = null;
-        LobbyConnectionStatus = LobbyConnectionStatus.Disconnect;
     }
 
     public async Task<Lobby> JoinLobbyByCode(string requesterUasId, string lobbyCode,
         Dictionary<string, PlayerDataObject> localUserData)
     {
-        LobbyConnectionStatus = LobbyConnectionStatus.Connecting;
         var joinOptions = new JoinLobbyByCodeOptions()
         {
             Player = new Player(requesterUasId, null, localUserData)
@@ -90,12 +76,10 @@ public class LobbyAPIInterface
         {
             var lobby = await Lobbies.Instance.JoinLobbyByCodeAsync(lobbyCode, joinOptions);
             JoinedLobby = lobby;
-            LobbyConnectionStatus = LobbyConnectionStatus.Success;
         }
         catch (Exception e)
         {
             var reason = $"{e.Message} ({e.InnerException?.Message})";
-            LobbyConnectionStatus = LobbyConnectionStatus.Failed;
             Debug.LogError($"Lobby Error: {reason}");
             throw;
         }
@@ -109,13 +93,11 @@ public class LobbyAPIInterface
         {
             await Lobbies.Instance.RemovePlayerAsync(lobbyId, requesterUasId);
             JoinedLobby = null;
-            LobbyConnectionStatus = LobbyConnectionStatus.Disconnect;
         }
         catch (LobbyServiceException e) when (e is {Reason: LobbyExceptionReason.PlayerNotFound})
         {
             // If Player is not found, they have already left the lobby or have been kicked out. No need to throw here
             Debug.Log("Player has already left the lobby.");
-            LobbyConnectionStatus = LobbyConnectionStatus.Disconnect;
         }
     }
     
@@ -147,7 +129,6 @@ public class LobbyAPIInterface
         catch (Exception e)
         {
             var reason = $"{e.Message} ({e.InnerException?.Message})";
-            LobbyConnectionStatus = LobbyConnectionStatus.Failed;
             Debug.LogError($"Lobby Error: {reason}");
             throw;
         }
