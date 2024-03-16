@@ -1,13 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
-using Unity.IO.LowLevel.Unsafe;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : NetworkBehaviour
 {
+    [SerializeField] private float dashCooldown = 2f;
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float dashDistance = 5f;
     [SerializeField] private float dashTime = 0.25f;
@@ -66,7 +64,8 @@ public class PlayerController : NetworkBehaviour
     {
         if(!_canDash)
             return;
-        if(_canDash && _dashTimer >= 4){
+        if(_canDash && _dashTimer >= dashCooldown)
+        {
             _isDashing = true;
             var dashTarget = _rb.position + _moveDirection * dashDistance;
             _rb.DOMove(dashTarget, dashTime).SetEase(Ease.InOutQuint).OnComplete (() => {
