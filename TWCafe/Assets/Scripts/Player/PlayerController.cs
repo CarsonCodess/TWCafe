@@ -80,7 +80,7 @@ public class PlayerController : NetworkBehaviour
     {
         if(!IsOwner)
             return;
-        DOVirtual.Float(0f, 1f, 0.1f, null).OnComplete(() =>
+        DOVirtual.Float(0f, 1f, 0.1f, _ => {}).OnComplete(() =>
         {
             SetEquippedItemServerRpc(item);
         });
