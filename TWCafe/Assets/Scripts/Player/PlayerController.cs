@@ -17,6 +17,8 @@ public class PlayerController : NetworkBehaviour
     private bool _canDash = true;
     private float _dashTimer = 0;
     private bool _isDashing = false;
+    private bool _canInteract = false;
+    private float _interactTimer;
     private Rigidbody2D _rb;
     private NetworkVariable<int> _equippedItem = new NetworkVariable<int>();
     private NetworkVariable<bool> _interacting = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -49,7 +51,16 @@ public class PlayerController : NetworkBehaviour
         _dashTimer += Time.deltaTime;
         if(_dashTimer >= 4)
             _canDash = true;
-        _interacting.Value = Keyboard.current.eKey.wasPressedThisFrame;
+
+        if (_interactTimer > 0f)
+        {
+            _interactTimer -= Time.deltaTime;
+            _canInteract = false;
+        }
+        else if (_interactTimer <= 0f)
+            _canInteract = true;
+        if(_canInteract)
+            _interacting.Value = Keyboard.current.eKey.wasPressedThisFrame;
     }
 
     private void FixedUpdate()
@@ -80,6 +91,8 @@ public class PlayerController : NetworkBehaviour
     {
         if(!IsOwner)
             return;
+        _interactTimer = 0.1f;
+        _canInteract = false;
         SetEquippedItemServerRpc(item);
     }
     
