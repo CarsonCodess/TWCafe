@@ -10,6 +10,13 @@ public class Pickup : NetworkBehaviour
     
     private List<PlayerController> _players = new List<PlayerController>();
 
+    private float _timer;
+
+    private void Awake()
+    {
+        _timer = 0.1f;
+    }
+
     private void OnTriggerEnter2D(Collider2D col)
     {
         if (col.CompareTag("Player"))
@@ -24,6 +31,11 @@ public class Pickup : NetworkBehaviour
 
     private void Update()
     {
+        if (_timer > 0)
+        {
+            _timer -= Time.deltaTime;
+            return;
+        }
         foreach (var player in _players)
         {
             if (player.IsPressingInteract())
