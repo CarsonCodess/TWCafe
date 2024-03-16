@@ -13,6 +13,12 @@ public class AccountManager : Singleton<AccountManager>
 
     protected async void Start()
     {
+        if (AuthenticationService.Instance.IsSignedIn)
+        {
+            ShowTitleScreen();
+            return;
+        }
+        
         if (PlayerPrefs.HasKey("_PASSWORD"))
         {
             var username = PlayerPrefs.GetString("_USERNAME");
@@ -31,17 +37,14 @@ public class AccountManager : Singleton<AccountManager>
                 errorMessage.text = $"{e.Message}";
                 return;
             }
-            titleScreen.SetActive(true);
-            gameObject.SetActive(false);
+            ShowTitleScreen();
         }
     }
 
     public void Login()
     {
         if (!AuthenticationService.Instance.IsSignedIn)
-        {
             LoginInternal(usernameField.text, passwordField.text);
-        }
     }
 
     private async void LoginInternal(string username, string password)
@@ -66,8 +69,7 @@ public class AccountManager : Singleton<AccountManager>
         
         PlayerPrefs.SetString("_USERNAME", usernameField.text);
         PlayerPrefs.SetString("_PASSWORD", passwordField.text);
-        titleScreen.SetActive(true);
-        gameObject.SetActive(false);
+        ShowTitleScreen();
     }
 
     public async void CreateAccount()
@@ -91,16 +93,20 @@ public class AccountManager : Singleton<AccountManager>
             }
         }
         
-        titleScreen.SetActive(true);
-        gameObject.SetActive(false);
+        ShowTitleScreen();
     }
 
     public void Logout()
     {
         PlayerPrefs.DeleteKey("_USERNAME");
         PlayerPrefs.DeleteKey("_PASSWORD");
-        titleScreen.SetActive(false);
-        gameObject.SetActive(true);
+        ShowTitleScreen();
         AuthenticationService.Instance.SignOut(true);
+    }
+    
+    private void ShowTitleScreen()
+    {
+        titleScreen.SetActive(true);
+        gameObject.SetActive(false);
     }
 }
