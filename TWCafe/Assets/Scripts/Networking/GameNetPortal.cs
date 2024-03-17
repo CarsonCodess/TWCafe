@@ -20,8 +20,7 @@ public class GameNetPortal : MonoBehaviour
     public LobbyAPIInterface GetLobbyAPIInterface => _lobbyAPIInterface;
     public RelayAPIInterface GetRelayAPIInterface => _relayAPIInterface;
     public AuthenticationAPIInterface GetAuthenticationAPIInterface => _authenticationAPIInterface;
-    public NetworkManager GetNetworkManager => NetworkManager.Singleton;
-    
+
     [Header("UI")] 
     [SerializeField] private bool displayLobbyCode;
     [SerializeField, ShowIf(nameof(displayLobbyCode))] private TMP_Text lobbyCodeText;
@@ -40,6 +39,7 @@ public class GameNetPortal : MonoBehaviour
 
     private const float HeartbeatPeriod = 8;
     private float _heartbeatTime;
+    private NetworkManager _nm;
 
     #region Initialization
 
@@ -58,18 +58,19 @@ public class GameNetPortal : MonoBehaviour
     private async void Start()
     {
         await _authenticationAPIInterface.InitializeAndSignInAsync();
+        _nm = NetworkManager.Singleton;
         Subscribe();
     }
 
     private void Subscribe()
     {
-        GetNetworkManager.OnClientDisconnectCallback += OnClientDisconnect;
+        _nm.OnClientDisconnectCallback += OnClientDisconnect;
     }
 
     private void OnDestroy()
     {
-        if (GetNetworkManager)
-            GetNetworkManager.OnClientDisconnectCallback -= OnClientDisconnect;
+        if (_nm)
+            _nm.OnClientDisconnectCallback -= OnClientDisconnect;
     }
 
     #endregion
@@ -87,7 +88,7 @@ public class GameNetPortal : MonoBehaviour
 
     public async Task Disconnect()
     {
-        var nm = GetNetworkManager;
+        var nm = _nm;
         if (!nm.IsListening || nm.ShutdownInProgress)
             return;
         HideLobbyCode();
@@ -105,7 +106,7 @@ public class GameNetPortal : MonoBehaviour
 
     private async Task LeaveOrDeleteLobby()
     {
-        if (_lobbyAPIInterface.JoinedLobby == null || GetNetworkManager == null)
+        if (_lobbyAPIInterface.JoinedLobby == null || _nm == null)
             return;
         var lobby = _lobbyAPIInterface.JoinedLobby;
         var joinedLobbyID = lobby.Id;
@@ -121,7 +122,7 @@ public class GameNetPortal : MonoBehaviour
 
     private void HandleConnectionApproval(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
-        response.CreatePlayerObject = GameManager.Instance.GetGameType() == GameType.Singleplayer;
+        response.CreatePlayerObject = false;
         response.Approved = true;
     }
 
@@ -141,8 +142,8 @@ public class GameNetPortal : MonoBehaviour
                 }
             });
 
-        GetNetworkManager.ConnectionApprovalCallback += HandleConnectionApproval;
-        GetNetworkManager.StartHost();
+        _nm.ConnectionApprovalCallback += HandleConnectionApproval;
+        _nm.StartHost();
         LoadingScreen.Instance.LoadFake();
         LoadOnlineScene();
         ShowLobbyCode();
@@ -166,16 +167,20 @@ public class GameNetPortal : MonoBehaviour
         if (!relayStarted)
             return;
 
-        GetNetworkManager.StartClient();
+        _nm.StartClient();
         LoadingScreen.Instance.LoadFake();
         ShowLobbyCode();
     }
     
     public void StartSingleplayerGame()
     {
-        GetNetworkManager.ConnectionApprovalCallback += HandleConnectionApproval;
-        GetNetworkManager.StartHost();
-        LoadingScreen.Instance.LoadFake();
+        _nm.ConnectionApprovalCallback += HandleConnectionApproval;
+        _nm.StartHost();
+        if (GameManager.Instance.GetGameType() == GameType.Singleplayer)
+        {
+            var player = Instantiate(_nm.NetworkConfig.PlayerPrefab);
+            player.GetComponent<NetworkObject>().SpawnAsPlayerObject(HostNetworkId);
+        }
         LoadSingleplayerScene();
     }
 
@@ -201,7 +206,7 @@ public class GameNetPortal : MonoBehaviour
 
     private void LoadSingleplayerScene()
     {
-        SceneManager.LoadSceneAsync(singlePlayerSceneName, LoadSceneMode.Single);
+        _nm.SceneManager.LoadScene(singlePlayerSceneName, LoadSceneMode.Single);
         LoadingScreen.Instance.LoadFake();
     }
     
@@ -219,7 +224,7 @@ public class GameNetPortal : MonoBehaviour
     [ServerRpc]
     private void LoadOnlineSceneServerRpc()
     {
-        GetNetworkManager.SceneManager.LoadScene(onlineSceneName, LoadSceneMode.Single);
+        _nm.SceneManager.LoadScene(onlineSceneName, LoadSceneMode.Single);
     }
     #endregion
 
@@ -227,7 +232,7 @@ public class GameNetPortal : MonoBehaviour
 
     private async void Update()
     {
-        if (GetNetworkManager.IsHost && GameManager.Instance.GetGameType() == GameType.Multiplayer)
+        if (_nm.IsHost && GameManager.Instance.GetGameType() == GameType.Multiplayer)
             UpdateLobbyHeartbeat();
         if (leaveOnEscape && Input.GetKeyDown(KeyCode.Escape))
         {

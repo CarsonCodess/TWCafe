@@ -1,38 +1,27 @@
-using System;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-public class Pickup : NetworkBehaviour
+public class Pickup : Interactable
 {
     [SerializeField] private Item item;
-    
-    private List<PlayerController> _players = new List<PlayerController>();
 
-    private void OnTriggerEnter2D(Collider2D col)
+    protected override void Update()
     {
-        if (col.CompareTag("Player"))
-            _players.Add(col.GetComponent<PlayerController>());
-    }
-    
-    private void OnTriggerExit2D(Collider2D col)
-    {
-        if (col.CompareTag("Player"))
-            _players.Remove(col.GetComponent<PlayerController>());
-    }
-
-    private void Update()
-    {
-        foreach (var player in _players)
+        base.Update();
+        foreach (var player in players)
         {
-            if (player.IsPressingInteract())
+            if (player.IsPressingInteract() && player.GetItem() == 0)
             {
                 player.Pickup(item.itemId);
                 DespawnSelfServerRpc();
                 break;
             }
         }
+    }
+
+    protected override void OnUpdate(PlayerController player)
+    {
+        
     }
 
     [ServerRpc(RequireOwnership = false)]
