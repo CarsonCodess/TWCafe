@@ -16,3 +16,4 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: b6d4af3e6e3c3584992d64d502f856cd, type: 3}
   foodType: 0
   prefab: {fileID: 7135026216388607922, guid: f13c51945be4c1e4782be7eb2e308dd4, type: 3}
+  chopAmount: 5

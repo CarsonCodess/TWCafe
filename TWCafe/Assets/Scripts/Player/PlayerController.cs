@@ -13,7 +13,6 @@ public class PlayerController : NetworkBehaviour
     private PlayerControls _playerControls;
     private Vector2 _moveDirection = Vector2.zero;
     private InputAction _move;
-    private InputAction _dash;
     private bool _canDash = true;
     private float _dashTimer = 0;
     private bool _isDashing = false;
@@ -32,8 +31,8 @@ public class PlayerController : NetworkBehaviour
     {
         _playerControls.Enable(); 
         _move = _playerControls.Movement.Walk;
-        _dash = _playerControls.Movement.Dash;
-        _dash.performed += Dash;
+        _playerControls.Movement.Dash.performed += Dash;
+        _playerControls.Movement.Drop.performed += DropAndSpawnItem;
     }
 
     private void OnDisable()
@@ -85,11 +84,26 @@ public class PlayerController : NetworkBehaviour
             SetEquippedItemServerRpc(item);
         });
     }
+
+    public void DropAndSpawnItem(InputAction.CallbackContext context)
+    {
+        if(_equippedItem.Value == 0)
+            return;
+        DropAndSpawnItemServerRpc();
+    }
+
+    [ServerRpc]
+    public void DropAndSpawnItemServerRpc()
+    {
+        var itemObject = Instantiate(GameManager.Instance.GetItemObject(_equippedItem.Value).prefab,
+            transform.position,
+            Quaternion.identity);
+        itemObject.GetComponent<NetworkObject>().Spawn();
+        SetEquippedItemServerRpc(0);
+    }
     
     public void Drop()
     {
-        if(!IsOwner)
-            return;
         SetEquippedItemServerRpc(0);
     }
 

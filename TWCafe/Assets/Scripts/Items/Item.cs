@@ -14,4 +14,5 @@ public class Item : ScriptableObject
     public Sprite icon;
     public FoodItemType foodType;
     public GameObject prefab;
+    public int chopAmount;
 }
