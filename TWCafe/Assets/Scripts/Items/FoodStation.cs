@@ -15,10 +15,12 @@ public class FoodStation : Interactable
         {
             indicator.SetActive(true);
             SetItemServerRpc(player.GetItem());
+            indicator.GetComponent<SpriteRenderer>().sprite =
+                GameManager.Instance.GetItemObject(player.GetItem()).icon;
             player.Drop();
         }
-            
-        if(_itemCooking.Value > 0 && !indicator.activeSelf)
+
+        if (_itemCooking.Value > 0 && !indicator.activeSelf)
             indicator.SetActive(true);
         else if(_itemCooking.Value <= 0)
             indicator.SetActive(false);

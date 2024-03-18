@@ -11,6 +11,7 @@ public enum FoodItemType
 public class Item : ScriptableObject
 {
     public int itemId;
+    public Sprite icon;
     public FoodItemType foodType;
     public GameObject prefab;
 }
