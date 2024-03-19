@@ -46,7 +46,7 @@ public class PlayerController : NetworkBehaviour
             return;
         _moveDirection = _move.ReadValue<Vector2>();
         _dashTimer += Time.deltaTime;
-        if(_dashTimer >= 4)
+        if(_dashTimer >= dashCooldown)
             _canDash = true;
         _interacting.Value = Keyboard.current.eKey.wasPressedThisFrame;
     }
@@ -63,7 +63,7 @@ public class PlayerController : NetworkBehaviour
     {
         if(!_canDash)
             return;
-        if(_canDash && _dashTimer >= dashCooldown)
+        if(_canDash)
         {
             _isDashing = true;
             var dashTarget = _rb.position + _moveDirection * dashDistance;
@@ -93,7 +93,7 @@ public class PlayerController : NetworkBehaviour
     }
 
     [ServerRpc]
-    public void DropAndSpawnItemServerRpc()
+    private void DropAndSpawnItemServerRpc()
     {
         var itemObject = Instantiate(GameManager.Instance.GetItemObject(_equippedItem.Value).prefab,
             transform.position,
