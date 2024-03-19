@@ -45,7 +45,11 @@ public class Customer : Interactable
                 
         }
         else
-            transform.DOMove(_seat.transform.position, 5f).SetEase(Ease.Linear).OnComplete(() => ReadyServerRpc());
+            transform.DOMove(_seat.transform.position, 5f).SetEase(Ease.Linear).OnComplete(() =>
+            {
+                ReadyServerRpc();
+                Invoke(nameof(StartAngryTimerServerRpc), timeBeforeAngry);
+            });
     }
 
     private void LeaveTable()
