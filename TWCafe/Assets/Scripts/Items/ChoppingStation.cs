@@ -19,10 +19,8 @@ public class ChoppingStation : Interactable
         {
             indicator.SetActive(true);
             bar.SetActive(true);
-            _chopProgress.Value = 0;
+            PlayerSetServerRpc();
             SetItemServerRpc(player.GetItem());
-            indicator.GetComponent<SpriteRenderer>().sprite =
-                GameManager.Instance.GetItemObject(player.GetItem()).icon;
             player.Drop();
         }
 
@@ -30,6 +28,8 @@ public class ChoppingStation : Interactable
         {
             indicator.SetActive(true);
             bar.SetActive(true);
+            indicator.GetComponent<SpriteRenderer>().sprite =
+                GameManager.Instance.GetItemObject(_itemCooking.Value).icon;
         }
         else if (_itemCooking.Value <= 0)
         {
@@ -56,6 +56,12 @@ public class ChoppingStation : Interactable
         
         barFill.rectTransform.sizeDelta = new Vector2(-Mathf.Lerp(0, 2, 1 - _chopProgress.Value), barFill.rectTransform.sizeDelta.y);
         SetProgressServerRpc(_chopProgress.Value - Time.deltaTime / 4);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void PlayerSetServerRpc()
+    {
+        _chopProgress.Value = 0;
     }
 
     [ServerRpc(RequireOwnership = false)]

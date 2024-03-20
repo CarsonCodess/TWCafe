@@ -39,7 +39,7 @@ public class Customer : Interactable
         if (!_seat)
         {
             if (_waveManager.IsQueueFull())
-                transform.DOMove(Vector2.zero, 5f).SetEase(Ease.Linear).OnComplete(() => LeaveCafe());
+                transform.DOMove(Vector2.zero, 5f).SetEase(Ease.Linear).OnComplete(() => LeaveCafeServerRpc());
             else
                 _waveManager.AddToQueue(this);
                 
@@ -54,17 +54,20 @@ public class Customer : Interactable
 
     private void LeaveTable()
     {
-        LeaveCafe(true);
-        _waveManager.MoveQueue();
+        LeaveCafeServerRpc(true);
     }
 
-    private void LeaveCafe(bool leavingFromTable = false)
+    [ServerRpc(RequireOwnership = false)]
+    private void LeaveCafeServerRpc(bool leavingFromTable = false)
     {
         if(!IsHost)
             return;
         if (_seat)
             _waveManager.AddSeat(_seat);
 
+        if(leavingFromTable)
+            _waveManager.MoveQueue();
+        
         transform.DOMove(_waveManager.transform.position, 5f).OnComplete(() => {
             GetComponent<NetworkObject>().Despawn();
         }).OnUpdate(() =>

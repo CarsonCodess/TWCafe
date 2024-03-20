@@ -92,7 +92,7 @@ public class PlayerController : NetworkBehaviour
         DropAndSpawnItemServerRpc();
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void DropAndSpawnItemServerRpc()
     {
         var itemObject = Instantiate(GameManager.Instance.GetItemObject(_equippedItem.Value).prefab,
@@ -107,7 +107,7 @@ public class PlayerController : NetworkBehaviour
         SetEquippedItemServerRpc(0);
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void SetEquippedItemServerRpc(int item)
     {
         _equippedItem.Value = item;
