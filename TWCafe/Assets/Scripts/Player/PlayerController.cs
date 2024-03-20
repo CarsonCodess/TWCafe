@@ -87,12 +87,12 @@ public class PlayerController : NetworkBehaviour
 
     public void DropAndSpawnItem(InputAction.CallbackContext context)
     {
-        if(_equippedItem.Value == 0)
+        if(_equippedItem.Value == 0 || !IsOwner)
             return;
         DropAndSpawnItemServerRpc();
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [ServerRpc]
     private void DropAndSpawnItemServerRpc()
     {
         var itemObject = Instantiate(GameManager.Instance.GetItemObject(_equippedItem.Value).prefab,
