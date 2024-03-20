@@ -15,6 +15,8 @@ public class ChoppingStation : Interactable
 
     protected override void OnUpdate(PlayerController player)
     {
+        if(!IsHost)
+            return;
         if (player != null && _itemCooking.Value == 0 && player.GetItem() > 0 && GetItemObject(player).foodType == type && player.IsPressingInteract())
         {
             indicator.SetActive(true);

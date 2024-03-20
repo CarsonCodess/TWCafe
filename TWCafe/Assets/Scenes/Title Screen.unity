@@ -2270,6 +2270,8 @@ MonoBehaviour:
   singleplayerScreen: {fileID: 345084221}
   multiplayerScreen: {fileID: 187268933}
   optionsScreen: {fileID: 1846204118}
+  transitionDuration: 1
+  transitionEase: 10
 --- !u!1 &662822083
 GameObject:
   m_ObjectHideFlags: 0
