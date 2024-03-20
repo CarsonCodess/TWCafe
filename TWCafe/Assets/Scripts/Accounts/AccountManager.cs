@@ -9,7 +9,8 @@ public class AccountManager : Singleton<AccountManager>
     [SerializeField] private TMP_InputField usernameField;
     [SerializeField] private TMP_InputField passwordField;
     [SerializeField] private TMP_Text errorMessage;
-    [SerializeField] private GameObject titleScreen;
+
+    [SerializeField] private MainMenu menu;
 
     protected async void Start()
     {
@@ -97,13 +98,14 @@ public class AccountManager : Singleton<AccountManager>
     {
         PlayerPrefs.DeleteKey("_USERNAME");
         PlayerPrefs.DeleteKey("_PASSWORD");
-        ShowTitleScreen();
+        menu.DisableAllScreens();
+        gameObject.SetActive(true);
         AuthenticationService.Instance.SignOut(true);
     }
     
     private void ShowTitleScreen()
     {
-        titleScreen.SetActive(true);
+        menu.LoadTitleScreen();
         gameObject.SetActive(false);
     }
 }

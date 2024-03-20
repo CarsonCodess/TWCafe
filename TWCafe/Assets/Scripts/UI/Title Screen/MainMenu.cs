@@ -1,4 +1,5 @@
 using UnityEngine;
+using DG.Tweening;
 
 public class MainMenu : MonoBehaviour
 {
@@ -6,6 +7,13 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject singleplayerScreen;
     [SerializeField] private GameObject multiplayerScreen;
     [SerializeField] private GameObject optionsScreen;
+
+    public void Start(){
+        titleScreen.GetComponent<RectTransform>().DOAnchorPos(new Vector2(Screen.width, Screen.height) * Vector2.up, 0f);
+        singleplayerScreen.GetComponent<RectTransform>().DOAnchorPos(new Vector2(Screen.width, Screen.height) * Vector2.down, 0f);
+        multiplayerScreen.GetComponent<RectTransform>().DOAnchorPos(new Vector2(Screen.width, Screen.height) * Vector2.left, 0f);
+        optionsScreen.GetComponent<RectTransform>().DOAnchorPos(new Vector2(Screen.width, Screen.height) * Vector2.right, 0f);
+    }
 
     public void StartSinglePlayer()
     {
@@ -16,37 +24,36 @@ public class MainMenu : MonoBehaviour
     public void LoadSingleplayerScreen()
     {
         DisableAllScreens();
-        singleplayerScreen.SetActive(true);
+        singleplayerScreen.GetComponent<RectTransform>().DOAnchorPos(Vector2.zero, 1f);
     }
     
     public void LoadMultiplayerScreen()
     {
         DisableAllScreens();
-        multiplayerScreen.SetActive(true);
+        multiplayerScreen.GetComponent<RectTransform>().DOAnchorPos(Vector2.zero, 1f);
     }
 
     public void LoadOptionsScreen()
     {
         DisableAllScreens();
-        optionsScreen.SetActive(true);
+        optionsScreen.GetComponent<RectTransform>().DOAnchorPos(Vector2.zero, 1f);
     }
     
     public void LoadTitleScreen()
     {
         DisableAllScreens();
-        titleScreen.SetActive(true);
+        titleScreen.GetComponent<RectTransform>().DOAnchorPos(Vector2.zero, 1f);
     }
     
     public void Quit()
     {
         Application.Quit();
     }
-
-    private void DisableAllScreens()
+    public void DisableAllScreens()
     {
-        titleScreen.SetActive(false);
-        singleplayerScreen.SetActive(false);
-        multiplayerScreen.SetActive(false);
-        optionsScreen.SetActive(false);
+        titleScreen.GetComponent<RectTransform>().DOAnchorPos(new Vector2(Screen.width, Screen.height) * Vector2.up, 1f);
+        singleplayerScreen.GetComponent<RectTransform>().DOAnchorPos(new Vector2(Screen.width, Screen.height) * Vector2.down, 1f);
+        multiplayerScreen.GetComponent<RectTransform>().DOAnchorPos(new Vector2(Screen.width, Screen.height) * Vector2.left, 1f);
+        optionsScreen.GetComponent<RectTransform>().DOAnchorPos(new Vector2(Screen.width, Screen.height) * Vector2.right, 1f);
     }
 }

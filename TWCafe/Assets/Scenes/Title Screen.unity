@@ -272,7 +272,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &187268934
 RectTransform:
   m_ObjectHideFlags: 0
@@ -342,7 +342,7 @@ RectTransform:
   m_Father: {fileID: 1169897886}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.018181818, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -913,7 +913,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &345084222
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2241,11 +2241,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 450785347}
-  - {fileID: 1553039222}
   - {fileID: 1809302716}
   - {fileID: 345084222}
   - {fileID: 1846204119}
   - {fileID: 187268934}
+  - {fileID: 1553039222}
   - {fileID: 538033289}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4220,14 +4220,14 @@ MonoBehaviour:
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_LayoutGroup: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 5
+  m_ContentType: 4
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 0
+  m_KeyboardType: 1
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
-  m_CharacterValidation: 5
+  m_CharacterValidation: 4
   m_RegexValue: 
   m_GlobalPointSize: 14
   m_CharacterLimit: 6
@@ -6005,7 +6005,7 @@ MonoBehaviour:
   usernameField: {fileID: 626610533}
   passwordField: {fileID: 1135214102}
   errorMessage: {fileID: 1569535621}
-  titleScreen: {fileID: 1809302715}
+  menu: {fileID: 657183333}
 --- !u!1 &1569535619
 GameObject:
   m_ObjectHideFlags: 0
@@ -6327,7 +6327,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1809302716
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6501,7 +6501,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1846204119
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6706,7 +6706,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -482.49988, y: 0}
+  m_AnchoredPosition: {x: -482.49994, y: 0}
   m_SizeDelta: {x: -965, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1918097709
