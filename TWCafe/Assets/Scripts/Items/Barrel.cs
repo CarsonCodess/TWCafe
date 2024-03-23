@@ -4,12 +4,12 @@ using UnityEngine;
 public class Barrel : Interactable
 {
     [SerializeField] private Item item;
-    [SerializeField] private SpriteRenderer label;
+    //[SerializeField] private SpriteRenderer label;
 
     private void Awake()
     {
-        label.sprite = item.icon;
-        label.gameObject.SetActive(true);
+        //label.sprite = item.icon;
+        //label.gameObject.SetActive(true);
     }
 
     protected override void OnUpdate(PlayerController player)

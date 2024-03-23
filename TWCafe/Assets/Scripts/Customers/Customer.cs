@@ -39,13 +39,12 @@ public class Customer : Interactable
         if (!_seat)
         {
             if (_waveManager.IsQueueFull())
-                transform.DOMove(Vector2.zero, 5f).SetEase(Ease.Linear).OnComplete(() => LeaveCafe());
+                transform.DOMove(new Vector3(0f, transform.position.y, 0f), 5f).SetEase(Ease.Linear).OnComplete(() => LeaveCafe());
             else
                 _waveManager.AddToQueue(this);
-                
         }
         else
-            transform.DOMove(_seat.transform.position, 5f).SetEase(Ease.Linear).OnComplete(() =>
+            transform.DOMove(new Vector3(_seat.transform.position.x, transform.position.y, _seat.transform.position.z), 5f).SetEase(Ease.Linear).OnComplete(() =>
             {
                 ReadyServerRpc();
                 Invoke(nameof(StartAngryTimerServerRpc), timeBeforeAngry);
@@ -65,7 +64,7 @@ public class Customer : Interactable
         if (_seat)
             _waveManager.AddSeat(_seat);
 
-        transform.DOMove(_waveManager.transform.position, 5f).OnComplete(() => {
+        transform.DOMove(new Vector3(_waveManager.transform.position.x, transform.position.y, _waveManager.transform.position.z), 5f).OnComplete(() => {
             GetComponent<NetworkObject>().Despawn();
         }).OnUpdate(() =>
         {
@@ -90,7 +89,7 @@ public class Customer : Interactable
 
         _orderInQueue--;
         _queuePosition = _waveManager.waitingQueuePositions[_orderInQueue];
-        transform.DOMove(_queuePosition.transform.position, isMovingToQueue ? 5f : 3f);
+        transform.DOMove(new Vector3(_queuePosition.transform.position.x, transform.position.y, _queuePosition.transform.position.z), isMovingToQueue ? 5f : 3f);
     }
 
     public void AddToQueue(int order, GameObject position)
@@ -114,6 +113,7 @@ public class Customer : Interactable
     private void TakeOrderServerRpc()
     {
         _hasTakenOrder.Value = true;
+        StopAngryTimerServerRpc();
         Invoke(nameof(StartAngryTimerServerRpc), timeBeforeAngry);
     }
 
@@ -155,6 +155,8 @@ public class Customer : Interactable
     {
         orderPopup.SetActive(_hasTakenOrder.Value && _isReady.Value);
         angryBar.SetActive(_isAngry.Value);
+        orderPopup.transform.LookAt(Camera.main.transform);
+        angryBar.transform.LookAt(Camera.main.transform);
     }
     
     public bool IsFirstInQueue()

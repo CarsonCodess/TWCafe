@@ -21,6 +21,8 @@ public class ChoppingStation : Interactable
         {
             indicator.SetActive(true);
             bar.SetActive(true);
+            indicator.GetComponent<SpriteRenderer>().sprite =
+                GameManager.Instance.GetItemObject(player.GetItem()).icon;
             PlayerSetServerRpc();
             SetItemServerRpc(player.GetItem());
             player.Drop();

@@ -16,14 +16,14 @@ public class PlayerController : NetworkBehaviour
     private bool _canDash = true;
     private float _dashTimer = 0;
     private bool _isDashing = false;
-    private Rigidbody2D _rb;
+    private Rigidbody _rb;
     private NetworkVariable<int> _equippedItem = new NetworkVariable<int>();
     private NetworkVariable<bool> _interacting = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     private void Awake()
     {
         _playerControls = new PlayerControls();
-        _rb = GetComponent<Rigidbody2D>();
+        _rb = GetComponent<Rigidbody>();
     }
     
 
@@ -55,8 +55,8 @@ public class PlayerController : NetworkBehaviour
     {
         if(_isDashing)
             return;
-        var acceleration = (_moveDirection * moveSpeed - _rb.velocity) / 3f;
-        _rb.velocity += acceleration * Time.deltaTime * 100;
+        var acceleration = (_moveDirection * moveSpeed - new Vector2(_rb.velocity.x, _rb.velocity.z)) / 3f;
+        _rb.velocity += new Vector3(acceleration.x * Time.deltaTime * 100, 0f, acceleration.y * Time.deltaTime * 100);
     }
 
     private void Dash(InputAction.CallbackContext context)
@@ -66,8 +66,8 @@ public class PlayerController : NetworkBehaviour
         if(_canDash)
         {
             _isDashing = true;
-            var dashTarget = _rb.position + _moveDirection * dashDistance;
-            _rb.DOMove(dashTarget, dashTime).SetEase(Ease.InOutQuint).OnComplete (() => {
+            var dashTarget = new Vector3(transform.position.x + (_moveDirection.x * dashDistance), transform.position.y, transform.position.z + (_moveDirection.y * dashDistance));
+            _rb.transform.DOMove(dashTarget, dashTime).SetEase(Ease.InOutQuint).OnComplete (() => {
                 _isDashing = false;
             });
             _canDash = false;

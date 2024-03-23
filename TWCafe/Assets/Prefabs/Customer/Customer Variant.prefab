@@ -20,6 +20,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 909422205547802067, guid: 371f4ae33f8f6bd4798e6f617e809cd0, type: 3}
+      propertyPath: m_Constraints
+      value: 122
+      objectReference: {fileID: 0}
     - target: {fileID: 2576563766685186182, guid: 371f4ae33f8f6bd4798e6f617e809cd0, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 2129485469
@@ -64,6 +68,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4131068105014259450, guid: 371f4ae33f8f6bd4798e6f617e809cd0, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: b9f2812013f346a4aafb0440ba5b801b, type: 2}
     - target: {fileID: 8573740195699891027, guid: 371f4ae33f8f6bd4798e6f617e809cd0, type: 3}
       propertyPath: m_Name
       value: Customer Variant

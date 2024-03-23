@@ -7,13 +7,16 @@ public abstract class Interactable : NetworkBehaviour
 {
     protected List<PlayerController> players = new List<PlayerController>();
 
-    protected virtual void OnTriggerEnter2D(Collider2D col)
+    protected virtual void OnTriggerEnter(Collider col)
     {
         if (col.CompareTag("Player"))
+        {
             players.Add(col.GetComponent<PlayerController>());
+            print("xotic smells bad");
+        }
     }
     
-    protected virtual void OnTriggerExit2D(Collider2D col)
+    protected virtual void OnTriggerExit(Collider col)
     {
         if (col.CompareTag("Player"))
             players.Remove(col.GetComponent<PlayerController>());
