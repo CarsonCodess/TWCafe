@@ -11,6 +11,7 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float dashDistance = 5f;
     [SerializeField] private float dashTime = 0.25f;
+    [SerializeField] private ParticleSystem footsteps;
     
     private PlayerControls _playerControls;
     private Vector2 _moveDirection = Vector2.zero;
@@ -30,7 +31,6 @@ public class PlayerController : NetworkBehaviour
         _animHandler = GetComponent<AnimationHandler>();
     }
     
-
     private void OnEnable()
     {
         _playerControls.Enable(); 
@@ -78,11 +78,17 @@ public class PlayerController : NetworkBehaviour
         if (_moveDirection.x != 0f || _moveDirection.y != 0f)
         {
             _animHandler.SetParameter("Move", 0.5f, 0.25f);
+            if(!footsteps.isPlaying)
+                footsteps.Play();
             if(new Vector3(_rb.velocity.x, 0f, _rb.velocity.z) != Vector3.zero)
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation (new Vector3(_rb.velocity.x, 0f, _rb.velocity.z)), Time.deltaTime * 15f);
         }
         else
+        {
             _animHandler.SetParameter("Move", 0f, 0.25f);
+            if(footsteps.isPlaying)
+                footsteps.Stop();
+        }
     }
 
     private void Dash(InputAction.CallbackContext context)

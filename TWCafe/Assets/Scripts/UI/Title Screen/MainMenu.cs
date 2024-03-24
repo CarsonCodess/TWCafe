@@ -27,6 +27,7 @@ public class MainMenu : MonoBehaviour
     public void LoadSingleplayerScreen()
     {
         DisableAllScreens();
+        titleScreen.GetComponent<RectTransform>().DOAnchorPos(new Vector2(Screen.width, Screen.height) * Vector2.up, transitionDuration).SetEase(transitionEase);
         singleplayerScreen.GetComponent<RectTransform>().DOAnchorPos(Vector2.zero, transitionDuration).SetEase(transitionEase);
         singleplayerScreen.SetActive(true);
     }
@@ -35,6 +36,7 @@ public class MainMenu : MonoBehaviour
     {
         DisableAllScreens();
         multiplayerScreen.GetComponent<RectTransform>().DOAnchorPos(Vector2.zero, transitionDuration).SetEase(transitionEase);
+        titleScreen.GetComponent<RectTransform>().DOAnchorPos(new Vector2(Screen.width, Screen.height) * Vector2.right, transitionDuration).SetEase(transitionEase);
         multiplayerScreen.SetActive(true);
     }
 
@@ -42,6 +44,7 @@ public class MainMenu : MonoBehaviour
     {
         DisableAllScreens();
         optionsScreen.GetComponent<RectTransform>().DOAnchorPos(Vector2.zero, transitionDuration).SetEase(transitionEase);
+        titleScreen.GetComponent<RectTransform>().DOAnchorPos(new Vector2(Screen.width, Screen.height) * Vector2.left, transitionDuration).SetEase(transitionEase);
         optionsScreen.SetActive(true);
     }
     
@@ -58,7 +61,7 @@ public class MainMenu : MonoBehaviour
     }
     public void DisableAllScreens()
     {
-        titleScreen.GetComponent<RectTransform>().DOAnchorPos(new Vector2(Screen.width, Screen.height) * Vector2.up, transitionDuration).SetEase(transitionEase);
+        //titleScreen.GetComponent<RectTransform>().DOAnchorPos(new Vector2(Screen.width, Screen.height) * Vector2.up, transitionDuration).SetEase(transitionEase);
         singleplayerScreen.GetComponent<RectTransform>().DOAnchorPos(new Vector2(Screen.width, Screen.height) * Vector2.down, transitionDuration).SetEase(transitionEase);
         multiplayerScreen.GetComponent<RectTransform>().DOAnchorPos(new Vector2(Screen.width, Screen.height) * Vector2.left, transitionDuration).SetEase(transitionEase);
         optionsScreen.GetComponent<RectTransform>().DOAnchorPos(new Vector2(Screen.width, Screen.height) * Vector2.right, transitionDuration).SetEase(transitionEase);

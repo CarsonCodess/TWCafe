@@ -1943,7 +1943,7 @@ MonoBehaviour:
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
   m_Cameras: []
-  m_RendererIndex: -1
+  m_RendererIndex: 0
   m_VolumeLayerMask:
     serializedVersion: 2
     m_Bits: 1
@@ -2271,7 +2271,7 @@ MonoBehaviour:
   multiplayerScreen: {fileID: 187268933}
   optionsScreen: {fileID: 1846204118}
   transitionDuration: 1
-  transitionEase: 10
+  transitionEase: 13
 --- !u!1 &662822083
 GameObject:
   m_ObjectHideFlags: 0
@@ -6782,7 +6782,7 @@ MonoBehaviour:
     PlayerPrefab: {fileID: 9033403922857130567, guid: 12272c064b50d96408de723cddb71fcb, type: 3}
     Prefabs:
       NetworkPrefabsLists:
-      - {fileID: 11400000, guid: 4d24be7dbe7cce84eaafa2c05124d1e4, type: 2}
+      - {fileID: 11400000, guid: ac808ce86bd341244b22618e96e381d8, type: 2}
     TickRate: 30
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 1

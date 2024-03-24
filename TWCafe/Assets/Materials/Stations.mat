@@ -37,8 +37,7 @@ Material:
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
-  disabledShaderPasses:
-  - SRPDEFAULTUNLIT
+  disabledShaderPasses: []
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -119,7 +118,7 @@ Material:
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
-    - _CameraDistanceImpact: 0
+    - _CameraDistanceImpact: 0.63
     - _CelExtraEnabled: 0
     - _CelNumSteps: 3
     - _CelPrimaryMode: 2
@@ -160,7 +159,7 @@ Material:
     - _OutlineEnabled: 0
     - _OutlineScale: 1
     - _OutlineSpace: 0
-    - _OutlineWidth: 1
+    - _OutlineWidth: 9.5
     - _OverrideLightmapDir: 0
     - _Parallax: 0.005
     - _QueueOffset: 0

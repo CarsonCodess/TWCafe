@@ -121,7 +121,7 @@ Material:
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
-    - _CameraDistanceImpact: 0
+    - _CameraDistanceImpact: 0.63
     - _CelExtraEnabled: 0
     - _CelNumSteps: 5
     - _CelPrimaryMode: 2
@@ -163,7 +163,7 @@ Material:
     - _OutlineEnabled: 0
     - _OutlineScale: 1
     - _OutlineSpace: 0
-    - _OutlineWidth: 1
+    - _OutlineWidth: 9.5
     - _OverrideLightmapDir: 0
     - _Parallax: 0.02
     - _QueueOffset: 0
