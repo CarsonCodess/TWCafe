@@ -15,4 +15,6 @@ public class Item : ScriptableObject
     public FoodItemType foodType;
     public GameObject prefab;
     public int chopAmount;
+    public int cookingTime = 3;
+    public int burnTime = 10;
 }
