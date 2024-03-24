@@ -24,12 +24,12 @@ public class WaveManager : NetworkBehaviour
         customer.GetComponent<Customer>().Initialize(seat, this);
     }
     
-    public void AddSeat(GameObject seat)
+    public void OpenUpSeat(GameObject seat)
     {
         seats.Add(seat);
     }
 
-    public void RemoveSeat(GameObject seat)
+    public void ReserveSeat(GameObject seat)
     {
         seats.Remove(seat);
     }

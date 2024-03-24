@@ -29,7 +29,7 @@ public class GameManager : Singleton<GameManager>
     public void PopulateItemsDictionary()
     {
 #if UNITY_EDITOR
-        var itemSoList = AssetDatabase.FindAssets("t:FoodItem");
+        var itemSoList = AssetDatabase.FindAssets("t:Item");
         foreach (var item in itemSoList)
         {
             var path = AssetDatabase.GUIDToAssetPath(item);

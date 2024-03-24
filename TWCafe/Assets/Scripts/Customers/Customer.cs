@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using Unity.Mathematics;
 using Unity.Netcode;
@@ -12,11 +13,14 @@ public class Customer : Interactable
     [SerializeField] private float timeBeforeAngry = 25f;
     [SerializeField] private float timeUntilLeave = 10f;
     [SerializeField] private float timeFinishEating = 5f;
+    [SerializeField] private float baseSpeed = 5f;
     private WaveManager _waveManager;
+    private AnimationHandler _animHandler;
     private GameObject _seat;
+    private bool _hasAvailableSeat;
     private int _orderInQueue;
     private GameObject _queuePosition;
-    private Tweener _moveToQueueTween;
+    private Tweener _moveTween;
     private NetworkVariable<bool> _isReady = new NetworkVariable<bool>();
     private NetworkVariable<bool> _hasTakenOrder = new NetworkVariable<bool>();
     private NetworkVariable<bool> _isAngry = new NetworkVariable<bool>();
@@ -25,30 +29,43 @@ public class Customer : Interactable
     public void Initialize(int seat, WaveManager waveManager)
     {
         _waveManager = waveManager;
-        _seat = seat != -1 ? waveManager.seats[seat] : null;
+        _animHandler = GetComponent<AnimationHandler>();
+        if (seat == -1)
+        {
+            _seat = null;
+            _hasAvailableSeat = false;
+        }
+        else
+        {
+            _seat = waveManager.seats[seat];
+            _hasAvailableSeat = true;
+        }
+
         WalkTowardsTable();
         UpdateUI();
     }
+    
     
     private void WalkTowardsTable()
     {
         if(!IsHost)
             return;
-        if(_seat)
-            _waveManager.RemoveSeat(_seat);
-        if (!_seat)
+        if (!_hasAvailableSeat)
         {
             if (_waveManager.IsQueueFull())
-                transform.DOMove(new Vector3(0f, transform.position.y, 0f), 5f).SetEase(Ease.Linear).OnComplete(() => LeaveCafe());
+                Move(Vector3.zero, () => LeaveCafe());
             else
                 _waveManager.AddToQueue(this);
         }
         else
-            transform.DOMove(new Vector3(_seat.transform.position.x, transform.position.y, _seat.transform.position.z), 5f).SetEase(Ease.Linear).OnComplete(() =>
+        {
+            _waveManager.ReserveSeat(_seat);
+            Move(_seat.transform.position, () =>
             {
                 ReadyServerRpc();
                 Invoke(nameof(StartAngryTimerServerRpc), timeBeforeAngry);
             });
+        }
     }
 
     private void LeaveTable()
@@ -61,12 +78,12 @@ public class Customer : Interactable
     {
         if(!IsHost)
             return;
-        if (_seat)
-            _waveManager.AddSeat(_seat);
-
-        transform.DOMove(new Vector3(_waveManager.transform.position.x, transform.position.y, _waveManager.transform.position.z), 5f).OnComplete(() => {
+        if (_hasAvailableSeat)
+            _waveManager.OpenUpSeat(_seat);
+        Move(_waveManager.transform.position,() => 
+        { 
             GetComponent<NetworkObject>().Despawn();
-        }).OnUpdate(() =>
+        }, () =>
         {
             if (!_waveManager.IsQueueFull() && !leavingFromTable)
             {
@@ -80,26 +97,23 @@ public class Customer : Interactable
     {
         if (_orderInQueue <= 0)
             return;
-        var isMovingToQueue = _moveToQueueTween != null;
-        if (_moveToQueueTween == null)
-        {
-            _moveToQueueTween.Kill();
-            _moveToQueueTween = null;
-        }
-
+        
         _orderInQueue--;
         _queuePosition = _waveManager.waitingQueuePositions[_orderInQueue];
-        transform.DOMove(new Vector3(_queuePosition.transform.position.x, transform.position.y, _queuePosition.transform.position.z), isMovingToQueue ? 5f : 3f);
+        transform.DOKill();
+        Move(_queuePosition.transform.position, () =>
+        {
+            LookAt(transform.position + Vector3.left);
+        });
     }
 
     public void AddToQueue(int order, GameObject position)
     {
         _orderInQueue = order;
         _queuePosition = position;
-        _moveToQueueTween = transform.DOMove(_queuePosition.transform.position, 5f).OnComplete(() =>
+        Move(_queuePosition.transform.position, () =>
         {
-            _moveToQueueTween.Kill();
-            _moveToQueueTween = null;
+            LookAt(transform.position + Vector3.left);
         });
     }
 
@@ -149,6 +163,11 @@ public class Customer : Interactable
             }
         }
         UpdateUI();
+        
+        if(_moveTween != null)
+            _animHandler.SetParameter("Move", 1f, 0.25f);
+        else
+            _animHandler.SetParameter("Move", 0f, 0.25f);
     }
 
     private void UpdateUI()
@@ -173,7 +192,28 @@ public class Customer : Interactable
     [ServerRpc(RequireOwnership = false)]
     private void StopAngryTimerServerRpc()
     {
+        CancelInvoke();
         _isAngry.Value = false;
         _angryProgress = 0f;
+    }
+
+    private void Move(Vector3 targetPos, TweenCallback onComplete = null, TweenCallback onUpdate = null)
+    {
+        LookAt(targetPos);
+        var duration = Vector3.Distance(transform.position, targetPos) / baseSpeed;
+        _moveTween = transform.DOMove(targetPos.ReplaceY(transform.position.y), duration).SetEase(Ease.Linear).OnComplete(() =>
+        {
+            _moveTween = null;
+            onComplete?.Invoke();
+        }).OnUpdate(() =>
+        {
+            onUpdate?.Invoke();
+            LookAt(targetPos);
+        });
+    }
+
+    private void LookAt(Vector3 target)
+    {
+        transform.DORotateQuaternion(Quaternion.LookRotation(target - transform.position), 1f);
     }
 }

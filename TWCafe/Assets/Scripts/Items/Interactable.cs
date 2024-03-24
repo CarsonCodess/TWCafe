@@ -10,10 +10,7 @@ public abstract class Interactable : NetworkBehaviour
     protected virtual void OnTriggerEnter(Collider col)
     {
         if (col.CompareTag("Player"))
-        {
             players.Add(col.GetComponent<PlayerController>());
-            print("xotic smells bad");
-        }
     }
     
     protected virtual void OnTriggerExit(Collider col)

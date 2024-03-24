@@ -1,4 +1,6 @@
+using System;
 using DG.Tweening;
+using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,6 +19,7 @@ public class PlayerController : NetworkBehaviour
     private float _dashTimer = 0;
     private bool _isDashing = false;
     private Rigidbody _rb;
+    private AnimationHandler _animHandler;
     private NetworkVariable<int> _equippedItem = new NetworkVariable<int>();
     private NetworkVariable<bool> _interacting = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
@@ -24,6 +27,7 @@ public class PlayerController : NetworkBehaviour
     {
         _playerControls = new PlayerControls();
         _rb = GetComponent<Rigidbody>();
+        _animHandler = GetComponent<AnimationHandler>();
     }
     
 
@@ -44,19 +48,41 @@ public class PlayerController : NetworkBehaviour
     {
         if(!IsOwner)
             return;
-        _moveDirection = _move.ReadValue<Vector2>();
-        _dashTimer += Time.deltaTime;
-        if(_dashTimer >= dashCooldown)
-            _canDash = true;
-        _interacting.Value = Keyboard.current.eKey.wasPressedThisFrame;
+
+        if (!_isDashing)
+        {
+            UpdatePlayerMovement();
+            _dashTimer += Time.deltaTime;
+            if(_dashTimer >= dashCooldown)
+                _canDash = true;
+            _interacting.Value = Keyboard.current.eKey.wasPressedThisFrame;
+        }
+        UpdatePlayerAnimation();
     }
 
-    private void FixedUpdate()
+    private void UpdatePlayerMovement()
     {
-        if(_isDashing)
-            return;
+        _moveDirection = _move.ReadValue<Vector2>();
         var acceleration = (_moveDirection * moveSpeed - new Vector2(_rb.velocity.x, _rb.velocity.z)) / 3f;
         _rb.velocity += new Vector3(acceleration.x * Time.deltaTime * 100, 0f, acceleration.y * Time.deltaTime * 100);
+    }
+
+    private void UpdatePlayerAnimation()
+    {
+        if (_isDashing)
+        {
+            _animHandler.SetParameter("Move", 1f, 0.25f);
+            return;
+        }
+        
+        if (_moveDirection.x != 0f || _moveDirection.y != 0f)
+        {
+            _animHandler.SetParameter("Move", 0.5f, 0.25f);
+            if(new Vector3(_rb.velocity.x, 0f, _rb.velocity.z) != Vector3.zero)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation (new Vector3(_rb.velocity.x, 0f, _rb.velocity.z)), Time.deltaTime * 15f);
+        }
+        else
+            _animHandler.SetParameter("Move", 0f, 0.25f);
     }
 
     private void Dash(InputAction.CallbackContext context)
