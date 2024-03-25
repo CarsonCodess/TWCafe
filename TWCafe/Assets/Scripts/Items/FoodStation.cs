@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,8 +24,7 @@ public class FoodStation : Interactable
             SetItemServerRpc(0);
         }
         
-        if (player != null && _itemCooking.Value == 0 && player.GetItem() > 0 &&
-            GetItemObject(player).foodType == type && player.IsPressingInteract())
+        if (player != null && _itemCooking.Value == 0 && player.GetItem() > 0 && GetItemObject(player).foodType == type && player.IsPressingInteract())
         {
             indicator.SetActive(true);
             bar.SetActive(true);
@@ -36,7 +36,11 @@ public class FoodStation : Interactable
             indicator.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.GetItemObject(player.GetItem()).icon;
             player.Drop();
         }
+    }
 
+    protected override void Update()
+    {
+        base.Update();
         if (_itemCooking.Value > 0 && !indicator.activeSelf)
         {
             indicator.SetActive(true);

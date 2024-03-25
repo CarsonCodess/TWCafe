@@ -80,8 +80,9 @@ public class Customer : Interactable
             return;
         if (_hasAvailableSeat)
             _waveManager.OpenUpSeat(_seat);
-        Move(_waveManager.transform.position,() => 
-        { 
+        Move(_waveManager.transform.position,() =>
+        {
+            transform.DOKill();
             GetComponent<NetworkObject>().Despawn();
         }, () =>
         {
@@ -207,9 +208,15 @@ public class Customer : Interactable
             onComplete?.Invoke();
         }).OnUpdate(() =>
         {
+            if (_moveTween.target == null)
+            {
+                _moveTween.Kill();
+                _moveTween = null;
+            }
             onUpdate?.Invoke();
-            LookAt(targetPos);
-        });
+            if(targetPos != Vector3.zero)
+                LookAt(targetPos);
+        }).SetAutoKill(true);
     }
 
     private void LookAt(Vector3 target)
