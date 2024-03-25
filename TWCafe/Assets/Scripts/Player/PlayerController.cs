@@ -141,9 +141,10 @@ public class PlayerController : NetworkBehaviour
         {
             SetEquippedItemServerRpc(item);
             holdingItemModel.SetActive(true);
-            var itemPrefab = GameManager.Instance.GetItemObject(item).prefab;
-            holdingItemModel.GetComponent<MeshFilter>().mesh = itemPrefab.GetComponentInChildren<MeshFilter>().sharedMesh;
-            holdingItemModel.GetComponent<MeshRenderer>().material = itemPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterial;
+            var itemSo = GameManager.Instance.GetItemObject(item);
+            holdingItemModel.GetComponent<MeshFilter>().mesh = itemSo.prefab.GetComponentInChildren<MeshFilter>().sharedMesh;
+            holdingItemModel.GetComponent<MeshRenderer>().material = itemSo.prefab.GetComponentInChildren<MeshRenderer>().sharedMaterial;
+            holdingItemModel.transform.localPosition = itemSo.holdingOffset;
         });
         _isEmoting = false;
     }
