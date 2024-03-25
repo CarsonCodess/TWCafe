@@ -214,13 +214,13 @@ public class Customer : Interactable
                 _moveTween = null;
             }
             onUpdate?.Invoke();
-            if(targetPos != Vector3.zero)
-                LookAt(targetPos);
+            LookAt(targetPos);
         }).SetAutoKill(true);
     }
 
     private void LookAt(Vector3 target)
     {
-        transform.DORotateQuaternion(Quaternion.LookRotation(target - transform.position), 1f);
+        if(transform != null && target - transform.position != Vector3.zero)
+            transform.DORotateQuaternion(Quaternion.LookRotation(target - transform.position), 1f);
     }
 }

@@ -12,6 +12,8 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private float dashDistance = 5f;
     [SerializeField] private float dashTime = 0.25f;
     [SerializeField] private ParticleSystem footsteps;
+    [SerializeField] private Transform dropTarget;
+    [SerializeField] private GameObject holdingItemModel;
     
     private PlayerControls _playerControls;
     private Vector2 _moveDirection = Vector2.zero;
@@ -71,21 +73,28 @@ public class PlayerController : NetworkBehaviour
     {
         if (_isDashing)
         {
-            _animHandler.SetParameter("Move", 1f, 0.25f);
+            _animHandler.SetParameter("Action", -1f, 0.15f);
+            _animHandler.SetParameter("Holding", 0f, 0.15f);
             return;
         }
         
+        if (_equippedItem.Value == 0)
+            _animHandler.SetParameter("Holding", 0f, 0.15f);
+        else
+            _animHandler.SetParameter("Holding", 1f, 0.15f);
+        
         if (_moveDirection.x != 0f || _moveDirection.y != 0f)
         {
-            _animHandler.SetParameter("Move", 0.5f, 0.25f);
+            _animHandler.SetParameter("Action", 1f, 0.15f);
+            //_animHandler.SetParameter("Move", _equippedItem.Value == 0 ? 0.5f : 0.75f, 0.15f);
             if(!footsteps.isPlaying)
                 footsteps.Play();
             if(new Vector3(_rb.velocity.x, 0f, _rb.velocity.z) != Vector3.zero)
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation (new Vector3(_rb.velocity.x, 0f, _rb.velocity.z)), Time.deltaTime * 15f);
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(new Vector3(_rb.velocity.x, 0f, _rb.velocity.z)), Time.deltaTime * 15f);
         }
         else
         {
-            _animHandler.SetParameter("Move", 0f, 0.25f);
+            _animHandler.SetParameter("Action", 0f, 0.15f);
             if(footsteps.isPlaying)
                 footsteps.Stop();
         }
@@ -114,6 +123,10 @@ public class PlayerController : NetworkBehaviour
         DOVirtual.Float(0f, 1f, 0.1f, _ => {}).OnComplete(() =>
         {
             SetEquippedItemServerRpc(item);
+            holdingItemModel.SetActive(true);
+            var itemPrefab = GameManager.Instance.GetItemObject(item).prefab;
+            holdingItemModel.GetComponent<MeshFilter>().mesh = itemPrefab.GetComponentInChildren<MeshFilter>().sharedMesh;
+            holdingItemModel.GetComponent<MeshRenderer>().material = itemPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterial;
         });
     }
 
@@ -127,16 +140,16 @@ public class PlayerController : NetworkBehaviour
     [ServerRpc]
     private void DropAndSpawnItemServerRpc()
     {
-        var itemObject = Instantiate(GameManager.Instance.GetItemObject(_equippedItem.Value).prefab,
-            transform.position,
-            Quaternion.identity);
+        var itemObject = Instantiate(GameManager.Instance.GetItemObject(_equippedItem.Value).prefab, dropTarget.position, Quaternion.identity);
         itemObject.GetComponent<NetworkObject>().Spawn();
         SetEquippedItemServerRpc(0);
+        holdingItemModel.SetActive(false);
     }
     
     public void Drop()
     {
         SetEquippedItemServerRpc(0);
+        holdingItemModel.SetActive(false);
     }
 
     [ServerRpc(RequireOwnership = false)]
