@@ -178,7 +178,7 @@ public class GameNetPortal : MonoBehaviour
         _nm.StartHost();
         if (GameManager.Instance.GetGameType() == GameType.Singleplayer)
         {
-            var player = Instantiate(_nm.NetworkConfig.PlayerPrefab);
+            var player = Instantiate(_nm.NetworkConfig.PlayerPrefab, new Vector3(0, -1.5f, 0), Quaternion.identity);
             player.GetComponent<NetworkObject>().SpawnAsPlayerObject(HostNetworkId);
         }
         LoadSingleplayerScene();

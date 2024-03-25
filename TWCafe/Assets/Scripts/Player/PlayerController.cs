@@ -14,13 +14,16 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private ParticleSystem footsteps;
     [SerializeField] private Transform dropTarget;
     [SerializeField] private GameObject holdingItemModel;
-    
+    [SerializeField] private float throwForce = 10f;
+
     private PlayerControls _playerControls;
     private Vector2 _moveDirection = Vector2.zero;
     private InputAction _move;
     private bool _canDash = true;
     private float _dashTimer = 0;
     private bool _isDashing = false;
+    private bool _isEmoting = false;
+    private int _emote;
     private Rigidbody _rb;
     private AnimationHandler _animHandler;
     private NetworkVariable<int> _equippedItem = new NetworkVariable<int>();
@@ -39,6 +42,7 @@ public class PlayerController : NetworkBehaviour
         _move = _playerControls.Movement.Walk;
         _playerControls.Movement.Dash.performed += Dash;
         _playerControls.Movement.Drop.performed += DropAndSpawnItem;
+        _playerControls.Movement.Throw.performed += Throw;
     }
 
     private void OnDisable()
@@ -48,6 +52,7 @@ public class PlayerController : NetworkBehaviour
     
     private void Update()
     {
+        holdingItemModel.SetActive(_equippedItem.Value != 0);
         if(!IsOwner)
             return;
 
@@ -58,6 +63,11 @@ public class PlayerController : NetworkBehaviour
             if(_dashTimer >= dashCooldown)
                 _canDash = true;
             _interacting.Value = Keyboard.current.eKey.wasPressedThisFrame;
+            if(Keyboard.current.digit1Key.wasPressedThisFrame || Keyboard.current.digit2Key.wasPressedThisFrame && !_isEmoting)
+                _isEmoting = true;
+            else if (_moveDirection.x != 0f || _moveDirection.y != 0f) // Moving
+                _isEmoting = false;
+            _emote = Keyboard.current.digit1Key.wasPressedThisFrame ? 1 : 2;
         }
         UpdatePlayerAnimation();
     }
@@ -77,16 +87,22 @@ public class PlayerController : NetworkBehaviour
             _animHandler.SetParameter("Holding", 0f, 0.15f);
             return;
         }
+
+        if (_isEmoting)
+        {
+            _animHandler.SetParameter("Holding", -1f, 0.15f);
+            _animHandler.SetParameter("Action", _emote == 1 ? 0f : -1f, 0.15f);
+            return;
+        }
         
         if (_equippedItem.Value == 0)
             _animHandler.SetParameter("Holding", 0f, 0.15f);
         else
             _animHandler.SetParameter("Holding", 1f, 0.15f);
         
-        if (_moveDirection.x != 0f || _moveDirection.y != 0f)
+        if (_moveDirection.x != 0f || _moveDirection.y != 0f) // Moving
         {
             _animHandler.SetParameter("Action", 1f, 0.15f);
-            //_animHandler.SetParameter("Move", _equippedItem.Value == 0 ? 0.5f : 0.75f, 0.15f);
             if(!footsteps.isPlaying)
                 footsteps.Play();
             if(new Vector3(_rb.velocity.x, 0f, _rb.velocity.z) != Vector3.zero)
@@ -107,6 +123,7 @@ public class PlayerController : NetworkBehaviour
         if(_canDash)
         {
             _isDashing = true;
+            _isEmoting = false;
             var dashTarget = new Vector3(transform.position.x + (_moveDirection.x * dashDistance), transform.position.y, transform.position.z + (_moveDirection.y * dashDistance));
             _rb.transform.DOMove(dashTarget, dashTime).SetEase(Ease.InOutQuint).OnComplete (() => {
                 _isDashing = false;
@@ -128,6 +145,7 @@ public class PlayerController : NetworkBehaviour
             holdingItemModel.GetComponent<MeshFilter>().mesh = itemPrefab.GetComponentInChildren<MeshFilter>().sharedMesh;
             holdingItemModel.GetComponent<MeshRenderer>().material = itemPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterial;
         });
+        _isEmoting = false;
     }
 
     public void DropAndSpawnItem(InputAction.CallbackContext context)
@@ -144,12 +162,32 @@ public class PlayerController : NetworkBehaviour
         itemObject.GetComponent<NetworkObject>().Spawn();
         SetEquippedItemServerRpc(0);
         holdingItemModel.SetActive(false);
+        _isEmoting = false;
+    }
+    
+    public void Throw(InputAction.CallbackContext context)
+    {
+        if(_equippedItem.Value == 0 || !IsOwner)
+            return;
+        ThrowServerRpc();
+    }
+
+    [ServerRpc]
+    private void ThrowServerRpc()
+    {
+        var itemObject = Instantiate(GameManager.Instance.GetItemObject(_equippedItem.Value).prefab, holdingItemModel.transform.position, Quaternion.identity);
+        itemObject.GetComponent<NetworkObject>().Spawn();
+        itemObject.GetComponent<Rigidbody>().AddForce(transform.forward * throwForce);
+        SetEquippedItemServerRpc(0);
+        holdingItemModel.SetActive(false);
+        _isEmoting = false;
     }
     
     public void Drop()
     {
         SetEquippedItemServerRpc(0);
         holdingItemModel.SetActive(false);
+        _isEmoting = false;
     }
 
     [ServerRpc(RequireOwnership = false)]

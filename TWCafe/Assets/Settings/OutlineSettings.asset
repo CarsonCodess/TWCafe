@@ -40,15 +40,15 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _ColorThresholdMax: 1
+    - _ColorThresholdMax: 1.5
     - _ColorThresholdMin: 0.1
-    - _DepthThresholdMax: 0.25
+    - _DepthThresholdMax: 1
     - _DepthThresholdMin: 0.1
     - _FadeRangeEnd: 50
     - _FadeRangeStart: 10
     - _NormalThresholdMax: 2
     - _NormalThresholdMin: 0.1
-    - _Thickness: 3
+    - _Thickness: 1
     m_Colors:
     - _EdgeColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
@@ -65,20 +65,20 @@ MonoBehaviour:
   m_Name: OutlineSettings
   m_EditorClassIdentifier: 
   edgeColor: {r: 0, g: 0, b: 0, a: 1}
-  thickness: 3
+  thickness: 1
   resolutionInvariant: 0
   fadeWithDistance: 0
   fadeRangeStart: 10
   fadeRangeEnd: 50
   useDepth: 1
   minDepthThreshold: 0.1
-  maxDepthThreshold: 0.25
+  maxDepthThreshold: 1
   useNormals: 1
   minNormalsThreshold: 0.1
   maxNormalsThreshold: 2
   useColor: 1
   minColorThreshold: 0.1
-  maxColorThreshold: 1
+  maxColorThreshold: 1.5
   renderEvent: 450
   outlineOnly: 0
   applyInSceneView: 1

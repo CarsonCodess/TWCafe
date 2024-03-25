@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4228415930828667812}
   - component: {fileID: 2126815843114352946}
+  - component: {fileID: 1056546368876663276}
   m_Layer: 6
   m_Name: Model
   m_TagString: Untagged
@@ -57,6 +58,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1056546368876663276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 70441090454099322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 2126815843114352946}
 --- !u!1 &139522336238476458
 GameObject:
   m_ObjectHideFlags: 0
@@ -4204,7 +4219,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1694766942
+  GlobalObjectIdHash: 1738805898
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -4230,6 +4245,7 @@ MonoBehaviour:
   timeBeforeAngry: 25
   timeUntilLeave: 10
   timeFinishEating: 5
+  baseSpeed: 5
 --- !u!114 &2449857164560824019
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4259,7 +4275,7 @@ MonoBehaviour:
   SyncPositionY: 1
   SyncPositionZ: 1
   SyncRotAngleX: 0
-  SyncRotAngleY: 0
+  SyncRotAngleY: 1
   SyncRotAngleZ: 0
   SyncScaleX: 0
   SyncScaleY: 0

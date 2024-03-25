@@ -128,7 +128,7 @@ public class ReadyManager : NetworkBehaviour
         StartLoadingScreenClientRpc();
         foreach (var client in NetworkManager.ConnectedClients)
         {
-            var player = Instantiate(NetworkManager.NetworkConfig.PlayerPrefab);
+            var player = Instantiate(NetworkManager.NetworkConfig.PlayerPrefab, new Vector3(0, -1.5f, 0), Quaternion.identity);
             player.GetComponent<NetworkObject>().SpawnAsPlayerObject(client.Key);
         }
         

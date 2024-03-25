@@ -15,8 +15,8 @@ public class ChoppingStation : Interactable
 
     protected override void OnUpdate(PlayerController player)
     {
-        if(!IsHost)
-            return;
+        // if(!IsHost)
+        //     return;
         if (player != null && _itemCooking.Value == 0 && player.GetItem() > 0 && GetItemObject(player).foodType == type && player.IsPressingInteract())
         {
             indicator.SetActive(true);
@@ -45,7 +45,7 @@ public class ChoppingStation : Interactable
         {
             if (player != null && player.IsPressingInteract())
             {
-                if (Mathf.Approximately(_chopProgress.Value, 1f) || _chopProgress.Value >= 1f)
+                if (_chopProgress.Value >= 1f)
                 {
                     if (player.GetItem() == 0)
                     {

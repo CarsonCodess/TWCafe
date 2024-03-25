@@ -68,6 +68,7 @@ public class Customer : Interactable
         }
     }
 
+    //[ServerRpc(RequireOwnership = false)]
     private void LeaveTable()
     {
         LeaveCafe(true);
@@ -140,16 +141,21 @@ public class Customer : Interactable
         {
             //Check if correct item
             player.Drop();
-            StopAngryTimerServerRpc();
-            ReadyServerRpc(false);
-            Invoke(nameof(LeaveTable), timeFinishEating);
+            ServeServerRpc();
         }
+    }
+
+    
+    [ServerRpc(RequireOwnership = false)]
+    private void ServeServerRpc()
+    {
+        StopAngryTimerServerRpc();
+        ReadyServerRpc(false);
+        Invoke(nameof(LeaveTable), timeFinishEating);
     }
 
     protected override void Update()
     {
-        if(!IsHost)
-            return;
         base.Update();
         if (_isAngry.Value)
         {
@@ -158,6 +164,8 @@ public class Customer : Interactable
             angryBarFill.rectTransform.anchoredPosition = new Vector2(-Mathf.Lerp(0, 2, 1 - _angryProgress) / 2, angryBarFill.rectTransform.anchoredPosition.y);
             if (_angryProgress >= 1f)
             {
+                if(!IsHost)
+                    return;
                 StopAngryTimerServerRpc();
                 ReadyServerRpc(false);
                 LeaveTable();
@@ -165,10 +173,9 @@ public class Customer : Interactable
         }
         UpdateUI();
         
-        if(_moveTween != null)
-            _animHandler.SetParameter("Move", 1f, 0.25f);
-        else
-            _animHandler.SetParameter("Move", 0f, 0.25f);
+        if(!IsHost)
+            return;
+        _animHandler.SetParameter("Move", _moveTween != null ? 1f : 0f, 0.25f);
     }
 
     private void UpdateUI()

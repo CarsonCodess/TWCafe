@@ -6145,6 +6145,7 @@ GameObject:
   m_Component:
   - component: {fileID: 948900171322764419}
   - component: {fileID: 7900476628179406380}
+  - component: {fileID: 7995633422828942372}
   m_Layer: 7
   m_Name: Model
   m_TagString: Untagged
@@ -6193,6 +6194,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7995633422828942372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2363777668100683969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b104b5d408bce5b4a916d9d849fb12c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 7900476628179406380}
 --- !u!1 &2652327318831037287
 GameObject:
   m_ObjectHideFlags: 0
@@ -9024,7 +9039,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3528221963
+  GlobalObjectIdHash: 1032143989
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 1
@@ -9051,6 +9066,7 @@ MonoBehaviour:
   footsteps: {fileID: 6304844430455242547}
   dropTarget: {fileID: 6715105912818188728}
   holdingItemModel: {fileID: 5739297491200093718}
+  throwForce: 500
 --- !u!114 &7620702134325001458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9080,7 +9096,7 @@ MonoBehaviour:
   SyncPositionY: 1
   SyncPositionZ: 1
   SyncRotAngleX: 0
-  SyncRotAngleY: 0
+  SyncRotAngleY: 1
   SyncRotAngleZ: 0
   SyncScaleX: 0
   SyncScaleY: 0
@@ -9119,7 +9135,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 116
   m_CollisionDetection: 0
 --- !u!114 &7742522085607355199
 MonoBehaviour:
@@ -9146,7 +9162,7 @@ BoxCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0

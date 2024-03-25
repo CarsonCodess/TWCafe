@@ -1,33 +1,41 @@
 using System.Collections;
 using System.Collections.Generic;
+using FlatKit;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class OptionsManager : MonoBehaviour
 {
-    [SerializeField] Slider slider;
-    [SerializeField] TextMeshProUGUI sliderText;
+    [SerializeField] private Slider fpsSlider;
+    [SerializeField] private TextMeshProUGUI fpsSliderText;    
+    [SerializeField] private Slider outlineSizeSlider;
+    [SerializeField] private TextMeshProUGUI outlineSizeText;
+    [SerializeField] private OutlineSettings outlineSettings;
 
-    private int targetFPS;
+    private int _targetFPS;
+    private int _outlineSize;
 
-    void Start()
+    private void Awake()
     {
         Application.targetFrameRate = 60;
-    }
-
-    void Update(){
-        slider.onValueChanged.AddListener((v) => {
-            sliderText.text = v.ToString("0");
-            targetFPS = (int)v;
+        fpsSlider.onValueChanged.AddListener(value => 
+        {
+            fpsSliderText.text = value.ToString("0");
+            _targetFPS = (int) value;
+        });
+        
+        outlineSizeSlider.onValueChanged.AddListener(value => 
+        {
+            outlineSizeText.text = value.ToString("0");
+            _outlineSize = (int) value;
         });
     }
 
     public void Apply()
     {
-        Debug.Log(targetFPS);
-        Application.targetFrameRate = targetFPS;
-        Debug.Log("Applied");
+        Application.targetFrameRate = _targetFPS;
+        outlineSettings.thickness = _outlineSize;
     }
 }
 
