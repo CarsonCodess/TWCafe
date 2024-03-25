@@ -4219,7 +4219,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1738805898
+  GlobalObjectIdHash: 1694766942
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -4239,6 +4239,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92138e16e30add34696f910498d90870, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  highlight: 1
+  usePlayerDirection: 0
+  meshRenderer: {fileID: 200499229655049437}
+  brightness: 5
   angryBar: {fileID: 8358896761104341336}
   angryBarFill: {fileID: 3410033458805202249}
   orderPopup: {fileID: 2176301545820803884}
@@ -4320,7 +4324,7 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 55
+    m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 192

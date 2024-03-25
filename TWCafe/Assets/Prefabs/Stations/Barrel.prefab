@@ -133,7 +133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2549156552
+  GlobalObjectIdHash: 2057939728
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -153,6 +153,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6437530a91f96f4791496adf962991c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  highlight: 1
+  usePlayerDirection: 1
+  meshRenderer: {fileID: 8903212483671920406}
+  brightness: 2.5
   item: {fileID: 11400000, guid: 2e6e71437729dd74aa9fdc7720e3f7cd, type: 2}
 --- !u!65 &2082360969240095958
 BoxCollider:

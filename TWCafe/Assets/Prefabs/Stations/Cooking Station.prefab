@@ -313,7 +313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 739818685
+  GlobalObjectIdHash: 3428694815
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -333,6 +333,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a029a072d90c8ca42affb062b4650264, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  highlight: 1
+  usePlayerDirection: 1
+  meshRenderer: {fileID: 409344892033729133}
+  brightness: 2.5
   bar: {fileID: 2319871954833649763}
   barFill: {fileID: 7650901656674827728}
   burnBarFill: {fileID: 9098597164396568844}
