@@ -9039,7 +9039,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3528221963
+  GlobalObjectIdHash: 1032143989
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 1
@@ -9066,7 +9066,7 @@ MonoBehaviour:
   footsteps: {fileID: 6304844430455242547}
   dropTarget: {fileID: 6715105912818188728}
   holdingItemModel: {fileID: 5739297491200093718}
-  throwForce: 500
+  throwForce: 15
 --- !u!114 &7620702134325001458
 MonoBehaviour:
   m_ObjectHideFlags: 0

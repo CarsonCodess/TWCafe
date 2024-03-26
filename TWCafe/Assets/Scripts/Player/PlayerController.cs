@@ -178,7 +178,7 @@ public class PlayerController : NetworkBehaviour
     {
         var itemObject = Instantiate(GameManager.Instance.GetItemObject(_equippedItem.Value).prefab, holdingItemModel.transform.position, Quaternion.identity);
         itemObject.GetComponent<NetworkObject>().Spawn();
-        itemObject.GetComponent<Rigidbody>().AddForce(transform.forward * throwForce);
+        itemObject.GetComponent<Rigidbody>().AddForce(transform.forward * throwForce, ForceMode.Impulse);
         SetEquippedItemServerRpc(0);
         holdingItemModel.SetActive(false);
         _isEmoting = false;
