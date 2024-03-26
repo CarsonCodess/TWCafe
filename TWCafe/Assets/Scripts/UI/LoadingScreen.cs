@@ -44,15 +44,16 @@ public class LoadingScreen : Singleton<LoadingScreen>
             if (value < 1)
             {
                 _timer += Time.deltaTime;
-                if (value < 1 && _timer >= _timePerStep)
+                if (_timer >= _timePerStep)
                 {
-                    DOVirtual.Float(value, value + _timePerStep, 0.15f, val =>
+                    DOVirtual.Float(value, Mathf.Min(1, value + 1f / steps), _timePerStep, val =>
                     {
                         value = val;
                     });
-                    _timer = 0f;
+                    _timer -= _timePerStep;
                 }
             }
+
             else
                 Hide();
         }

@@ -3825,8 +3825,8 @@ MonoBehaviour:
   fill: {fileID: 1115133145}
   maxRectValue: 910
   value: 0
-  loadTime: 0.5
-  steps: 3
+  loadTime: 0.2
+  steps: 1
 --- !u!1 &1041992014
 GameObject:
   m_ObjectHideFlags: 0
