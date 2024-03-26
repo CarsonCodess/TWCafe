@@ -5601,10 +5601,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dontDestroyOnLoad: 1
   items:
-    m_Keys: 0100000002000000
+    m_Keys: 010000000200000003000000
     m_Values:
     - {fileID: 11400000, guid: 2e6e71437729dd74aa9fdc7720e3f7cd, type: 2}
     - {fileID: 11400000, guid: ee162b495117b4b4dbfca33afaf42c12, type: 2}
+    - {fileID: 11400000, guid: c0a75bfa71f21124096059718b56838d, type: 2}
   gameType: 0
   fps: 60
 --- !u!4 &1364857268

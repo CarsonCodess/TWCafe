@@ -171,6 +171,8 @@ public class PlayerController : NetworkBehaviour
         if(_equippedItem.Value == 0 || !IsOwner)
             return;
         ThrowServerRpc();
+        _animHandler.Stop();
+        _animHandler.Play("Throw", 0.15f);
     }
 
     [ServerRpc]

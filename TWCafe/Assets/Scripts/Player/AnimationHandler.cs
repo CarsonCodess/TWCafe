@@ -22,20 +22,17 @@ public class AnimationHandler : MonoBehaviour
     {
         if(_animationState == animationName)
             return;
-        anim.CrossFade(animationName, 0.1f);
+        anim.CrossFade(animationName, duration);
         _animationState = animationName;
+    }
+    
+    public void Stop()
+    {
+        anim.StopPlayback();
     }
     
     public void SetParameter(string parameterName, float value, float duration = 0.1f)
     {
         anim.SetFloat(parameterName, value, duration, Time.deltaTime);
-    }
-    
-    public void SetParameterDoTween(string parameterName, float value, float duration = 0.1f)
-    {
-        DOVirtual.Float(anim.GetFloat(parameterName), value, duration, (val) =>
-        {
-            anim.SetFloat(parameterName, val);
-        });
     }
 }
