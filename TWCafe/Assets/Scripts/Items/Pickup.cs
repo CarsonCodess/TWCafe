@@ -1,9 +1,9 @@
+using System.Collections.Generic;
 using Unity.Netcode;
-using UnityEngine;
 
 public class Pickup : Interactable
 {
-    [SerializeField] private Item item;
+    private List<int> _ingredients;
 
     protected override void Update()
     {
@@ -12,11 +12,16 @@ public class Pickup : Interactable
         {
             if (player.IsPressingInteract() && player.GetItem() == 0)
             {
-                player.Pickup(item.itemId);
+                player.Pickup(_ingredients);
                 DespawnSelfServerRpc();
                 break;
             }
         }
+    }
+
+    public void SetIngredients(List<int> ingredients)
+    {
+        _ingredients = ingredients;
     }
 
     protected override void OnUpdate(PlayerController player)

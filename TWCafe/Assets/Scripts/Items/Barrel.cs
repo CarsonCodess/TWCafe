@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Barrel : Interactable
 {
-    [SerializeField] private Item item;
+    [FormerlySerializedAs("item")] [SerializeField] private Ingredient ingredient;
     //[SerializeField] private SpriteRenderer label;
 
     private void Awake()
@@ -15,6 +17,6 @@ public class Barrel : Interactable
     protected override void OnUpdate(PlayerController player)
     {
         if (player.IsPressingInteract() && player.GetItem() == 0)
-            player.Pickup(item.itemId);
+            player.Pickup(new List<int>{ingredient.itemId});
     }
 }

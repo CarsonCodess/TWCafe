@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
-using Sirenix.Serialization;
 using UnityEngine;
 using UnityEngine.Rendering;
 #if UNITY_EDITOR
@@ -15,7 +14,8 @@ public enum GameType
 
 public class GameManager : Singleton<GameManager>
 {
-    public SerializedDictionary<int, Item> items = new SerializedDictionary<int, Item>();
+    public SerializedDictionary<int, Ingredient> items = new SerializedDictionary<int, Ingredient>();
+    public List<Recipe> recipes = new List<Recipe>();
     [SerializeField] private GameType gameType;
     [SerializeField] private int fps = 60;
 
@@ -29,17 +29,25 @@ public class GameManager : Singleton<GameManager>
     public void PopulateItemsDictionary()
     {
 #if UNITY_EDITOR
-        var itemSoList = AssetDatabase.FindAssets("t:Item");
+        var itemSoList = AssetDatabase.FindAssets("t:Ingredient");
         foreach (var item in itemSoList)
         {
             var path = AssetDatabase.GUIDToAssetPath(item);
-            if(!items.ContainsKey(AssetDatabase.LoadAssetAtPath<Item>(path).itemId))
-                items.Add(AssetDatabase.LoadAssetAtPath<Item>(path).itemId, AssetDatabase.LoadAssetAtPath<Item>(path));
+            if(!items.ContainsKey(AssetDatabase.LoadAssetAtPath<Ingredient>(path).itemId))
+                items.Add(AssetDatabase.LoadAssetAtPath<Ingredient>(path).itemId, AssetDatabase.LoadAssetAtPath<Ingredient>(path));
+        }
+        
+        var recipeSoList = AssetDatabase.FindAssets("t:Recipe");
+        foreach (var recipe in recipeSoList)
+        {
+            var path = AssetDatabase.GUIDToAssetPath(recipe);
+            if(!recipes.Contains(AssetDatabase.LoadAssetAtPath<Recipe>(path)))
+                recipes.Add(AssetDatabase.LoadAssetAtPath<Recipe>(path));
         }
 #endif
     }
 
-    public Item GetItemObject(int itemId)
+    public Ingredient GetItemObject(int itemId)
     {
         return items[itemId];
     }

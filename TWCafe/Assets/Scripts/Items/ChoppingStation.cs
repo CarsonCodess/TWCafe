@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using DG.Tweening;
 using Unity.Mathematics;
 using Unity.Netcode;
@@ -49,7 +50,7 @@ public class ChoppingStation : Interactable
                 {
                     if (player.GetItem() == 0)
                     {
-                        player.Pickup(_itemCooking.Value);
+                        player.Pickup(new List<int>{_itemCooking.Value});
                         SetItemServerRpc(0);
                     }
                 }
@@ -80,7 +81,7 @@ public class ChoppingStation : Interactable
         _chopProgress.Value = math.max(0, progress);
     }
 
-    private Item GetItemObject(PlayerController player)
+    private Ingredient GetItemObject(PlayerController player)
     {
         return GameManager.Instance.GetItemObject(player.GetItem());
     }

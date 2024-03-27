@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,7 +21,7 @@ public class FoodStation : Interactable
         if (_itemCooking.Value > 0 && player != null && player.IsPressingInteract() && player.GetItem() == 0)
         {
             _cookTimer = 0f;
-            player.Pickup(_itemCooking.Value);
+            player.Pickup(new List<int>{_itemCooking.Value});
             SetItemServerRpc(0);
         }
         
@@ -111,7 +112,7 @@ public class FoodStation : Interactable
         _itemCooking.Value = item;
     }
 
-    private Item GetItemObject(PlayerController player)
+    private Ingredient GetItemObject(PlayerController player)
     {
         return GameManager.Instance.GetItemObject(player.GetItem());
     }

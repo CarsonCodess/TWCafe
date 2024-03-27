@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 36351f29d82677c49b7a02b71fd45833, type: 3}
-  m_Name: Banana
+  m_Name: Tomato
   m_EditorClassIdentifier: 
-  itemId: 1
+  itemId: 4
   holdingOffset: {x: 0, y: -0.1, z: -0.3}
-  icon: {fileID: 21300000, guid: b6d4af3e6e3c3584992d64d502f856cd, type: 3}
+  icon: {fileID: 21300000, guid: cc09b1a777dc8c84c8aadc14249de6c4, type: 3}
   foodType: 0
-  prefab: {fileID: 7135026216388607922, guid: f13c51945be4c1e4782be7eb2e308dd4, type: 3}
-  chopAmount: 5
-  cookingTime: 3
-  burnTime: 10
+  prefab: {fileID: 7135026216388607922, guid: 98ab6cb430bdbc84faff5151e5471b9e, type: 3}
+  chopAmount: 10
+  cookingTime: 8
+  burnTime: 16

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6514941050207018643}
   - component: {fileID: 7226456326634104341}
   - component: {fileID: 5357769251028715233}
-  - component: {fileID: 1239991354270934178}
+  - component: {fileID: 3074951684437901725}
   m_Layer: 0
   m_Name: Model
   m_TagString: Untagged
@@ -27,13 +27,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5537118547253934922}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: -0.7071068}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2672172213790255196}
-  m_LocalEulerAnglesHint: {x: 180, y: 180, z: -90}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!33 &7226456326634104341
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -41,7 +41,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5537118547253934922}
-  m_Mesh: {fileID: 3216447080179446721, guid: d9cdfc3134b114d42b3e51fbc41e467c, type: 3}
+  m_Mesh: {fileID: -4961678649679911585, guid: 4b46715ba049e8f4492ba1c497e5ab44, type: 3}
 --- !u!23 &5357769251028715233
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 02aa1106a275e15438160815f03552c2, type: 2}
+  - {fileID: 2100000, guid: 0dc132f289c525f48b374556fa2b392a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -84,7 +84,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &1239991354270934178
+--- !u!65 &3074951684437901725
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -103,8 +103,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.3525116, y: 1.6769909, z: 0.77265215}
-  m_Center: {x: -0.010894979, y: 0.09017559, z: 0.19807492}
+  m_Size: {x: 1.4993303, y: 1.5197756, z: 1.2717203}
+  m_Center: {x: -0.005745381, y: -0.008962691, z: 0.050047636}
 --- !u!1 &7135026216388607922
 GameObject:
   m_ObjectHideFlags: 0
@@ -119,7 +119,7 @@ GameObject:
   - component: {fileID: 5316350601414015753}
   - component: {fileID: 77728473446323361}
   m_Layer: 0
-  m_Name: Banana
+  m_Name: Tomato
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2461884929
+  GlobalObjectIdHash: 1300580998
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0

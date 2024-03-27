@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static Extensions;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -26,7 +28,7 @@ public class PlayerController : NetworkBehaviour
     private int _emote;
     private Rigidbody _rb;
     private AnimationHandler _animHandler;
-    private NetworkVariable<int> _equippedItem = new NetworkVariable<int>();
+    private NetworkList<int> _equippedItem = new NetworkList<int>(DefaultEmptyList(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private NetworkVariable<bool> _interacting = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     private void Awake()
@@ -52,7 +54,7 @@ public class PlayerController : NetworkBehaviour
     
     private void Update()
     {
-        holdingItemModel.SetActive(_equippedItem.Value != 0);
+        holdingItemModel.SetActive(_equippedItem[0] != 0);
         if(!IsOwner)
             return;
 
@@ -95,7 +97,7 @@ public class PlayerController : NetworkBehaviour
             return;
         }
         
-        if (_equippedItem.Value == 0)
+        if (_equippedItem[0] == 0)
             _animHandler.SetParameter("Holding", 0f, 0.15f);
         else
             _animHandler.SetParameter("Holding", 1f, 0.15f);
@@ -133,25 +135,29 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    public void Pickup(int item)
+    public void Pickup(List<int> item)
     {
         if(!IsOwner)
             return;
-        DOVirtual.Float(0f, 1f, 0.1f, _ => {}).OnComplete(() =>
-        {
-            SetEquippedItemServerRpc(item);
-            holdingItemModel.SetActive(true);
-            var itemSo = GameManager.Instance.GetItemObject(item);
-            holdingItemModel.GetComponent<MeshFilter>().mesh = itemSo.prefab.GetComponentInChildren<MeshFilter>().sharedMesh;
-            holdingItemModel.GetComponent<MeshRenderer>().material = itemSo.prefab.GetComponentInChildren<MeshRenderer>().sharedMaterial;
-            holdingItemModel.transform.localPosition = itemSo.holdingOffset;
-        });
+        DOVirtual.Float(0f, 1f, 0.1f, _ => {}).OnComplete(() => { PickupItem(item); });
         _isEmoting = false;
+    }
+
+    private void PickupItem(List<int> item)
+    {
+        _equippedItem.Clear();
+        foreach (var id in item)
+            _equippedItem.Add(id);
+        holdingItemModel.SetActive(true);
+        var itemSo = GameManager.Instance.GetItemObject(item[0]);
+        holdingItemModel.GetComponent<MeshFilter>().mesh = itemSo.prefab.GetComponentInChildren<MeshFilter>().sharedMesh;
+        holdingItemModel.GetComponent<MeshRenderer>().material =
+            itemSo.prefab.GetComponentInChildren<MeshRenderer>().sharedMaterial;
     }
 
     public void DropAndSpawnItem(InputAction.CallbackContext context)
     {
-        if(_equippedItem.Value == 0 || !IsOwner)
+        if(_equippedItem[0] == 0 || !IsOwner)
             return;
         DropAndSpawnItemServerRpc();
     }
@@ -159,16 +165,24 @@ public class PlayerController : NetworkBehaviour
     [ServerRpc]
     private void DropAndSpawnItemServerRpc()
     {
-        var itemObject = Instantiate(GameManager.Instance.GetItemObject(_equippedItem.Value).prefab, dropTarget.position, Quaternion.identity);
-        itemObject.GetComponent<NetworkObject>().Spawn();
-        SetEquippedItemServerRpc(0);
-        holdingItemModel.SetActive(false);
-        _isEmoting = false;
+        SpawnItem(dropTarget.position);
     }
-    
+
+    private GameObject SpawnItem(Vector3 pos)
+    {
+        var itemObject = Instantiate(GameManager.Instance.GetItemObject(_equippedItem[0]).prefab, pos, Quaternion.identity);
+        itemObject.GetComponent<NetworkObject>().Spawn();
+        var list = new List<int>();
+        foreach (var id in _equippedItem)
+            list.Add(id);
+        itemObject.GetComponent<Pickup>().SetIngredients(list);
+        Drop();
+        return itemObject;
+    }
+
     public void Throw(InputAction.CallbackContext context)
     {
-        if(_equippedItem.Value == 0 || !IsOwner)
+        if(_equippedItem[0] == 0 || !IsOwner)
             return;
         ThrowServerRpc();
         _animHandler.Stop();
@@ -178,30 +192,21 @@ public class PlayerController : NetworkBehaviour
     [ServerRpc]
     private void ThrowServerRpc()
     {
-        var itemObject = Instantiate(GameManager.Instance.GetItemObject(_equippedItem.Value).prefab, holdingItemModel.transform.position, Quaternion.identity);
-        itemObject.GetComponent<NetworkObject>().Spawn();
+        var itemObject = SpawnItem(holdingItemModel.transform.position);
         itemObject.GetComponent<Rigidbody>().AddForce(transform.forward * throwForce, ForceMode.Impulse);
-        SetEquippedItemServerRpc(0);
-        holdingItemModel.SetActive(false);
-        _isEmoting = false;
     }
     
     public void Drop()
     {
-        SetEquippedItemServerRpc(0);
+        _equippedItem.Clear();
+        _equippedItem.Add(0);
         holdingItemModel.SetActive(false);
         _isEmoting = false;
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void SetEquippedItemServerRpc(int item)
-    {
-        _equippedItem.Value = item;
-    }
-    
     public int GetItem()
     {
-        return _equippedItem.Value;
+        return _equippedItem[0];
     }
 
     public bool IsPressingInteract()
