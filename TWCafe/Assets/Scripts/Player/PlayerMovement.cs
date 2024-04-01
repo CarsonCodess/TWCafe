@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using Unity.Netcode;
@@ -34,27 +33,27 @@ public class PlayerMovement : NetworkBehaviour
     {
         _rb = GetComponent<Rigidbody>();
         _animHandler = GetComponent<AnimationHandler>();
-        
+        if (TryGetComponent(out _inputHandler))
+        {
+            _inputHandler.OnMove += OnMove;
+            _inputHandler.OnDrop += DropAndSpawnItem;
+            _inputHandler.OnThrow += Throw;
+            _inputHandler.OnDash += Dash;
+        }
     }
 
-    private void OnEnable()
+    public override void OnDestroy()
     {
-        if(!_inputHandler)
-            _inputHandler = GetComponent<InputHandler>();
-        _inputHandler.OnMove += OnMove;
-        _inputHandler.OnDrop += DropAndSpawnItem;
-        _inputHandler.OnThrow += Throw;
-        _inputHandler.OnDash += Dash;
+        base.OnDestroy();
+        if (_inputHandler)
+        {
+            _inputHandler.OnMove -= OnMove;
+            _inputHandler.OnDrop -= DropAndSpawnItem;
+            _inputHandler.OnThrow -= Throw;
+            _inputHandler.OnDash -= Dash;
+        }
     }
-
-    private void OnDisable()
-    {
-        _inputHandler.OnMove -= OnMove;
-        _inputHandler.OnDrop -= DropAndSpawnItem;
-        _inputHandler.OnThrow -= Throw;
-        _inputHandler.OnDash -= Dash;
-    }
-
+    
     public void OnMove(Vector2 moveDir)
     {
         _moveDirection = moveDir;

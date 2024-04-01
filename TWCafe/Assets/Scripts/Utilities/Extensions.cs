@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -13,6 +14,13 @@ public static class Extensions
     public static List<int> DefaultEmptyList()
     {
         return new List<int> {0};
+    }
+    
+    public static string SplitCamelCase(this string str)
+    {
+        if (string.IsNullOrEmpty(str)) 
+            return str;
+        return Regex.Replace(str, "([a-z](?=[A-Z])|[A-Z](?=[A-Z][a-z]))", "$1 ");
     }
     
     public static int[] DefaultEmptyArray()
