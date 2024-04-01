@@ -1,8 +1,10 @@
 using System;
+using Unity.Netcode;
 using UnityEngine;
 
-public class InputHandler : MonoBehaviour
+public class InputHandler : NetworkBehaviour
 {
+    public Vector2 MovementDirection { get; private set; }
     public event Action OnDash;
     public event Action OnDrop;
     public event Action OnThrow;
@@ -26,8 +28,10 @@ public class InputHandler : MonoBehaviour
 
     private void Update()
     {
-        var move = _playerControls.Movement.Walk.ReadValue<Vector2>();
-        OnMove?.Invoke(move);
+        if(!IsOwner)
+            return;
+        MovementDirection = _playerControls.Movement.Walk.ReadValue<Vector2>();
+        OnMove?.Invoke(MovementDirection);
     }
 
     private void OnDisable()

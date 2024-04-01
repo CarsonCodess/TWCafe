@@ -7,38 +7,34 @@ using static Extensions;
 
 public class PlayerMovement : NetworkBehaviour
 {
-    [SerializeField] private float dashCooldown = 2f;
     [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float dashDistance = 5f;
-    [SerializeField] private float dashTime = 0.25f;
     [SerializeField] private ParticleSystem footsteps;
     [SerializeField] private Transform dropTarget;
     [SerializeField] private GameObject holdingItemModel;
     [SerializeField] private float throwForce = 10f;
     [SerializeField] private GameObject baseItemPrefab;
 
-    private bool _canDash = true;
-    private float _dashTimer = 0;
-    private bool _isDashing = false;
+    private NetworkList<int> _equippedItem = new NetworkList<int>(DefaultEmptyList(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    private NetworkVariable<bool> _interacting = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
     private bool _isEmoting = false;
     private int _emote;
     private Vector2 _moveDirection;
     private Rigidbody _rb;
     private AnimationHandler _animHandler;
     private InputHandler _inputHandler;
-    private NetworkList<int> _equippedItem = new NetworkList<int>(DefaultEmptyList(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    private NetworkVariable<bool> _interacting = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    private PlayerDash _playerDash;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
         _animHandler = GetComponent<AnimationHandler>();
+        TryGetComponent(out _playerDash);
         if (TryGetComponent(out _inputHandler))
         {
             _inputHandler.OnMove += OnMove;
             _inputHandler.OnDrop += DropAndSpawnItem;
             _inputHandler.OnThrow += Throw;
-            _inputHandler.OnDash += Dash;
         }
     }
 
@@ -50,7 +46,6 @@ public class PlayerMovement : NetworkBehaviour
             _inputHandler.OnMove -= OnMove;
             _inputHandler.OnDrop -= DropAndSpawnItem;
             _inputHandler.OnThrow -= Throw;
-            _inputHandler.OnDash -= Dash;
         }
     }
     
@@ -67,11 +62,8 @@ public class PlayerMovement : NetworkBehaviour
         if(!IsOwner)
             return;
 
-        if (!_isDashing)
+        if (!IsDashing())
         {
-            _dashTimer += Time.deltaTime;
-            if(_dashTimer >= dashCooldown)
-                _canDash = true;
             _interacting.Value = Keyboard.current.eKey.wasPressedThisFrame;
             if(Keyboard.current.digit1Key.wasPressedThisFrame || Keyboard.current.digit2Key.wasPressedThisFrame && !_isEmoting)
                 _isEmoting = true;
@@ -84,7 +76,7 @@ public class PlayerMovement : NetworkBehaviour
 
     private void UpdatePlayerAnimation()
     {
-        if (_isDashing)
+        if (IsDashing())
         {
             _animHandler.SetParameter("Action", -1f, 0.15f);
             _animHandler.SetParameter("Holding", 0f, 0.15f);
@@ -116,23 +108,6 @@ public class PlayerMovement : NetworkBehaviour
             _animHandler.SetParameter("Action", 0f, 0.15f);
             if(footsteps.isPlaying)
                 footsteps.Stop();
-        }
-    }
-
-    private void Dash()
-    {
-        if(!_canDash)
-            return;
-        if(_canDash)
-        {
-            _isDashing = true;
-            _isEmoting = false;
-            var dashTarget = new Vector3(transform.position.x + (_moveDirection.x * dashDistance), transform.position.y, transform.position.z + (_moveDirection.y * dashDistance));
-            _rb.transform.DOMove(dashTarget, dashTime).SetEase(Ease.InOutQuint).OnComplete (() => {
-                _isDashing = false;
-            });
-            _canDash = false;
-            _dashTimer = 0;
         }
     }
 
@@ -214,5 +189,10 @@ public class PlayerMovement : NetworkBehaviour
     public bool IsPressingInteract()
     {
         return _interacting.Value;
+    }
+
+    private bool IsDashing()
+    {
+        return _playerDash != null && _playerDash.IsDashing;
     }
 }
