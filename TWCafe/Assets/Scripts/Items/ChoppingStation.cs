@@ -14,18 +14,18 @@ public class ChoppingStation : Interactable
     private NetworkVariable<int> _itemCooking = new NetworkVariable<int>();
     private NetworkVariable<float> _chopProgress = new NetworkVariable<float>();
 
-    protected override void OnUpdate(PlayerController player)
+    protected override void OnUpdate(PlayerMovement player)
     {
         // if(!IsHost)
         //     return;
-        if (player != null && _itemCooking.Value == 0 && player.GetItem() > 0 && GetItemObject(player).foodType == type && player.IsPressingInteract())
+        if (player != null && _itemCooking.Value == 0 && player.GetBaseItem() > 0 && GetItemObject(player).foodType == type && player.IsPressingInteract())
         {
             indicator.SetActive(true);
             bar.SetActive(true);
             indicator.GetComponent<SpriteRenderer>().sprite =
-                GameManager.Instance.GetItemObject(player.GetItem()).icon;
+                GameManager.Instance.GetItemObject(player.GetBaseItem()).icon;
             PlayerSetServerRpc();
-            SetItemServerRpc(player.GetItem());
+            SetItemServerRpc(player.GetBaseItem());
             player.Drop();
         }
 
@@ -48,7 +48,7 @@ public class ChoppingStation : Interactable
             {
                 if (_chopProgress.Value >= 1f)
                 {
-                    if (player.GetItem() == 0)
+                    if (player.GetBaseItem() == 0)
                     {
                         player.Pickup(new List<int>{_itemCooking.Value});
                         SetItemServerRpc(0);
@@ -81,8 +81,8 @@ public class ChoppingStation : Interactable
         _chopProgress.Value = math.max(0, progress);
     }
 
-    private Ingredient GetItemObject(PlayerController player)
+    private Ingredient GetItemObject(PlayerMovement player)
     {
-        return GameManager.Instance.GetItemObject(player.GetItem());
+        return GameManager.Instance.GetItemObject(player.GetBaseItem());
     }
 }

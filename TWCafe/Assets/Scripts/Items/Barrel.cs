@@ -14,9 +14,9 @@ public class Barrel : Interactable
         //label.gameObject.SetActive(true);
     }
 
-    protected override void OnUpdate(PlayerController player)
+    protected override void OnUpdate(PlayerMovement player)
     {
-        if (player.IsPressingInteract() && player.GetItem() == 0)
+        if (player.IsPressingInteract() && player.GetBaseItem() == 0)
             player.Pickup(new List<int>{ingredient.itemId});
     }
 }

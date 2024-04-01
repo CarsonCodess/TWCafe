@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
-using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static Extensions;
 
-public class PlayerController : NetworkBehaviour
+public class PlayerMovement : NetworkBehaviour
 {
     [SerializeField] private float dashCooldown = 2f;
     [SerializeField] private float moveSpeed = 5f;
@@ -17,39 +16,50 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private Transform dropTarget;
     [SerializeField] private GameObject holdingItemModel;
     [SerializeField] private float throwForce = 10f;
+    [SerializeField] private GameObject baseItemPrefab;
 
-    private PlayerControls _playerControls;
-    private Vector2 _moveDirection = Vector2.zero;
-    private InputAction _move;
     private bool _canDash = true;
     private float _dashTimer = 0;
     private bool _isDashing = false;
     private bool _isEmoting = false;
     private int _emote;
+    private Vector2 _moveDirection;
     private Rigidbody _rb;
     private AnimationHandler _animHandler;
+    private InputHandler _inputHandler;
     private NetworkList<int> _equippedItem = new NetworkList<int>(DefaultEmptyList(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     private NetworkVariable<bool> _interacting = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     private void Awake()
     {
-        _playerControls = new PlayerControls();
         _rb = GetComponent<Rigidbody>();
         _animHandler = GetComponent<AnimationHandler>();
+        
     }
-    
+
     private void OnEnable()
     {
-        _playerControls.Enable(); 
-        _move = _playerControls.Movement.Walk;
-        _playerControls.Movement.Dash.performed += Dash;
-        _playerControls.Movement.Drop.performed += DropAndSpawnItem;
-        _playerControls.Movement.Throw.performed += Throw;
+        if(!_inputHandler)
+            _inputHandler = GetComponent<InputHandler>();
+        _inputHandler.OnMove += OnMove;
+        _inputHandler.OnDrop += DropAndSpawnItem;
+        _inputHandler.OnThrow += Throw;
+        _inputHandler.OnDash += Dash;
     }
 
     private void OnDisable()
     {
-        _playerControls.Disable();
+        _inputHandler.OnMove -= OnMove;
+        _inputHandler.OnDrop -= DropAndSpawnItem;
+        _inputHandler.OnThrow -= Throw;
+        _inputHandler.OnDash -= Dash;
+    }
+
+    public void OnMove(Vector2 moveDir)
+    {
+        _moveDirection = moveDir;
+        var acceleration = (_moveDirection * moveSpeed - new Vector2(_rb.velocity.x, _rb.velocity.z)) / 3f;
+        _rb.velocity += new Vector3(acceleration.x * Time.deltaTime * 100, 0f, acceleration.y * Time.deltaTime * 100);
     }
     
     private void Update()
@@ -60,7 +70,6 @@ public class PlayerController : NetworkBehaviour
 
         if (!_isDashing)
         {
-            UpdatePlayerMovement();
             _dashTimer += Time.deltaTime;
             if(_dashTimer >= dashCooldown)
                 _canDash = true;
@@ -72,13 +81,6 @@ public class PlayerController : NetworkBehaviour
             _emote = Keyboard.current.digit1Key.wasPressedThisFrame ? 1 : 2;
         }
         UpdatePlayerAnimation();
-    }
-
-    private void UpdatePlayerMovement()
-    {
-        _moveDirection = _move.ReadValue<Vector2>();
-        var acceleration = (_moveDirection * moveSpeed - new Vector2(_rb.velocity.x, _rb.velocity.z)) / 3f;
-        _rb.velocity += new Vector3(acceleration.x * Time.deltaTime * 100, 0f, acceleration.y * Time.deltaTime * 100);
     }
 
     private void UpdatePlayerAnimation()
@@ -118,7 +120,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    private void Dash(InputAction.CallbackContext context)
+    private void Dash()
     {
         if(!_canDash)
             return;
@@ -150,12 +152,11 @@ public class PlayerController : NetworkBehaviour
             _equippedItem.Add(id);
         holdingItemModel.SetActive(true);
         var itemSo = GameManager.Instance.GetItemObject(item[0]);
-        holdingItemModel.GetComponent<MeshFilter>().mesh = itemSo.prefab.GetComponentInChildren<MeshFilter>().sharedMesh;
-        holdingItemModel.GetComponent<MeshRenderer>().material =
-            itemSo.prefab.GetComponentInChildren<MeshRenderer>().sharedMaterial;
+        holdingItemModel.GetComponent<MeshFilter>().mesh = itemSo.mesh;
+        holdingItemModel.GetComponent<MeshRenderer>().material = itemSo.material;
     }
 
-    public void DropAndSpawnItem(InputAction.CallbackContext context)
+    public void DropAndSpawnItem()
     {
         if(_equippedItem[0] == 0 || !IsOwner)
             return;
@@ -170,17 +171,14 @@ public class PlayerController : NetworkBehaviour
 
     private GameObject SpawnItem(Vector3 pos)
     {
-        var itemObject = Instantiate(GameManager.Instance.GetItemObject(_equippedItem[0]).prefab, pos, Quaternion.identity);
+        var itemObject = Instantiate(baseItemPrefab, pos, Quaternion.identity);
         itemObject.GetComponent<NetworkObject>().Spawn();
-        var list = new List<int>();
-        foreach (var id in _equippedItem)
-            list.Add(id);
-        itemObject.GetComponent<Pickup>().SetIngredients(list);
+        itemObject.GetComponent<Pickup>().Initialize(_equippedItem.ToList());
         Drop();
         return itemObject;
     }
 
-    public void Throw(InputAction.CallbackContext context)
+    public void Throw()
     {
         if(_equippedItem[0] == 0 || !IsOwner)
             return;
@@ -204,9 +202,14 @@ public class PlayerController : NetworkBehaviour
         _isEmoting = false;
     }
 
-    public int GetItem()
+    public int GetBaseItem()
     {
         return _equippedItem[0];
+    }
+    
+    public List<int> GetEntireItem()
+    {
+        return _equippedItem.ToList();
     }
 
     public bool IsPressingInteract()

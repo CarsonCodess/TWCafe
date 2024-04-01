@@ -133,11 +133,11 @@ public class Customer : Interactable
         Invoke(nameof(StartAngryTimerServerRpc), timeBeforeAngry);
     }
 
-    protected override void OnUpdate(PlayerController player)
+    protected override void OnUpdate(PlayerMovement player)
     {
         if(player.IsPressingInteract() && !_hasTakenOrder.Value && _isReady.Value)
             TakeOrderServerRpc();
-        else if (player.IsPressingInteract() && _hasTakenOrder.Value && _isReady.Value && player.GetItem() != 0)
+        else if (player.IsPressingInteract() && _hasTakenOrder.Value && _isReady.Value && player.GetBaseItem() != 0)
         {
             //Check if correct item
             player.Drop();

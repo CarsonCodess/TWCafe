@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Tomato
   m_EditorClassIdentifier: 
   itemId: 4
-  holdingOffset: {x: 0, y: -0.1, z: -0.3}
   icon: {fileID: 21300000, guid: cc09b1a777dc8c84c8aadc14249de6c4, type: 3}
   foodType: 0
-  prefab: {fileID: 7135026216388607922, guid: 98ab6cb430bdbc84faff5151e5471b9e, type: 3}
+  mesh: {fileID: -4961678649679911585, guid: 4b46715ba049e8f4492ba1c497e5ab44, type: 3}
+  material: {fileID: 2100000, guid: 0dc132f289c525f48b374556fa2b392a, type: 2}
   chopAmount: 10
   cookingTime: 8
   burnTime: 16

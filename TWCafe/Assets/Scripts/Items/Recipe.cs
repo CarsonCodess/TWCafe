@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Food Item")]
+[CreateAssetMenu(menuName = "Recipe")]
 public class Recipe : ScriptableObject
 {
     public Ingredient baseIngredient;

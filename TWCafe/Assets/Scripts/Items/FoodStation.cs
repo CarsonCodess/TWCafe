@@ -16,16 +16,16 @@ public class FoodStation : Interactable
     private bool _isCooked;
     private bool _isBurnt;
 
-    protected override void OnUpdate(PlayerController player)
+    protected override void OnUpdate(PlayerMovement player)
     {
-        if (_itemCooking.Value > 0 && player != null && player.IsPressingInteract() && player.GetItem() == 0)
+        if (_itemCooking.Value > 0 && player != null && player.IsPressingInteract() && player.GetBaseItem() == 0)
         {
             _cookTimer = 0f;
             player.Pickup(new List<int>{_itemCooking.Value});
             SetItemServerRpc(0);
         }
         
-        if (player != null && _itemCooking.Value == 0 && player.GetItem() > 0 && GetItemObject(player).foodType == type && player.IsPressingInteract())
+        if (player != null && _itemCooking.Value == 0 && player.GetBaseItem() > 0 && GetItemObject(player).foodType == type && player.IsPressingInteract())
         {
             indicator.SetActive(true);
             bar.SetActive(true);
@@ -33,8 +33,8 @@ public class FoodStation : Interactable
             SetBurnBar(0);
             _isCooked = false;
             _isBurnt = false;
-            SetItemServerRpc(player.GetItem());
-            indicator.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.GetItemObject(player.GetItem()).icon;
+            SetItemServerRpc(player.GetBaseItem());
+            indicator.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.GetItemObject(player.GetBaseItem()).icon;
             player.Drop();
         }
     }
@@ -112,8 +112,8 @@ public class FoodStation : Interactable
         _itemCooking.Value = item;
     }
 
-    private Ingredient GetItemObject(PlayerController player)
+    private Ingredient GetItemObject(PlayerMovement player)
     {
-        return GameManager.Instance.GetItemObject(player.GetItem());
+        return GameManager.Instance.GetItemObject(player.GetBaseItem());
     }
 }

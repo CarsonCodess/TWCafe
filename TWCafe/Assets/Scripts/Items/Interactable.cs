@@ -1,18 +1,19 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
-using Sirenix.OdinInspector;
+using ExternPropertyAttributes;
 using Unity.Netcode;
 using UnityEngine;
 
 public abstract class Interactable : NetworkBehaviour
 {
+    [Header("Interactable")]
     [SerializeField] protected bool highlight;
     [SerializeField] protected bool usePlayerDirection;
     [SerializeField, ShowIf("highlight")] protected Renderer meshRenderer;
     [SerializeField, ShowIf("highlight")] protected float brightness = 10;
     
-    protected List<PlayerController> players = new List<PlayerController>();
+    protected List<PlayerMovement> Players = new List<PlayerMovement>();
 
     protected virtual void OnTriggerEnter(Collider col)
     {
@@ -26,14 +27,14 @@ public abstract class Interactable : NetworkBehaviour
                 {
                     if (highlight)
                         meshRenderer.material.DOFloat(1f - brightness / 100, "_TextureImpact", 0.25f);
-                    players.Add(col.GetComponent<PlayerController>());
+                    Players.Add(col.GetComponent<PlayerMovement>());
                 }
             }
             else
             {
                 if (highlight)
                     meshRenderer.material.DOFloat(1f - brightness / 100, "_TextureImpact", 0.25f);
-                players.Add(col.GetComponent<PlayerController>());
+                Players.Add(col.GetComponent<PlayerMovement>());
             }
         }
     }
@@ -42,21 +43,21 @@ public abstract class Interactable : NetworkBehaviour
     {
         if (col.CompareTag("Player") && usePlayerDirection)
         {
-            var playerController = col.GetComponent<PlayerController>();
-            var isPlayerTracked = players.Contains(playerController);
+            var playerController = col.GetComponent<PlayerMovement>();
+            var isPlayerTracked = Players.Contains(playerController);
             Physics.Raycast(col.transform.position, col.transform.forward, out var hit);
             var isFacingObject = hit.transform != null && hit.transform.gameObject == gameObject;
             if (isFacingObject && !isPlayerTracked)
             {
                 if (highlight)
                         meshRenderer.material.DOFloat(1f - brightness / 100, "_TextureImpact", 0.25f);
-                players.Add(playerController);
+                Players.Add(playerController);
             }
             else if (!isFacingObject && isPlayerTracked)
             {
                 if (highlight)
                         meshRenderer.material.DOFloat(1f, "_TextureImpact", 0.25f);
-                players.Remove(playerController);
+                Players.Remove(playerController);
             }
         }
     }
@@ -67,17 +68,17 @@ public abstract class Interactable : NetworkBehaviour
         {
             if (highlight)
                     meshRenderer.material.DOFloat(1f, "_TextureImpact", 0.25f);
-            players.Remove(col.GetComponent<PlayerController>());
+            Players.Remove(col.GetComponent<PlayerMovement>());
         }
     }
 
     protected virtual void Update()
     {
-        foreach (var player in players)
+        foreach (var player in Players)
         {
             OnUpdate(player);
         }
     }
 
-    protected abstract void OnUpdate(PlayerController player);
+    protected abstract void OnUpdate(PlayerMovement player);
 }

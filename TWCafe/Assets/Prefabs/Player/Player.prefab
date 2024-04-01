@@ -8996,6 +8996,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3354989541166659758}
   - component: {fileID: -15532947494095419}
+  - component: {fileID: 6258654577561401833}
   - component: {fileID: 6407507709163893332}
   - component: {fileID: 7620702134325001458}
   - component: {fileID: -6420528057517322192}
@@ -9047,6 +9048,18 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!114 &6258654577561401833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9033403922857130567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 800cc4d466ed8b4478b6a9f1c79531b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &6407507709163893332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9067,6 +9080,7 @@ MonoBehaviour:
   dropTarget: {fileID: 6715105912818188728}
   holdingItemModel: {fileID: 5739297491200093718}
   throwForce: 15
+  baseItemPrefab: {fileID: 7135026216388607922, guid: f13c51945be4c1e4782be7eb2e308dd4, type: 3}
 --- !u!114 &7620702134325001458
 MonoBehaviour:
   m_ObjectHideFlags: 0
