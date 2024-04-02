@@ -28,7 +28,7 @@ public class LobbyAPIInterface
         var createOptions = new CreateLobbyOptions()
         {
             IsPrivate = isPrivate,
-            Player = new Player(requesterUasId, null, hostUserData),
+            Player = new Unity.Services.Lobbies.Models.Player(requesterUasId, null, hostUserData),
             Data = lobbyData
         };
 
@@ -70,7 +70,7 @@ public class LobbyAPIInterface
     {
         var joinOptions = new JoinLobbyByCodeOptions()
         {
-            Player = new Player(requesterUasId, null, localUserData)
+            Player = new Unity.Services.Lobbies.Models.Player(requesterUasId, null, localUserData)
         };
         try
         {

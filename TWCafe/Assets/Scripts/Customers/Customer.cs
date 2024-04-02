@@ -133,7 +133,7 @@ public class Customer : Interactable
         Invoke(nameof(StartAngryTimerServerRpc), timeBeforeAngry);
     }
 
-    protected override void OnUpdate(PlayerMovement player)
+    protected override void OnUpdate(Player player)
     {
         if(player.IsPressingInteract() && !_hasTakenOrder.Value && _isReady.Value)
             TakeOrderServerRpc();

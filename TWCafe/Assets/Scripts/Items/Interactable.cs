@@ -13,7 +13,7 @@ public abstract class Interactable : NetworkBehaviour
     [SerializeField, ShowIf("highlight")] protected Renderer meshRenderer;
     [SerializeField, ShowIf("highlight")] protected float brightness = 10;
     
-    protected List<PlayerMovement> Players = new List<PlayerMovement>();
+    protected List<Player> Players = new List<Player>();
 
     protected virtual void OnTriggerEnter(Collider col)
     {
@@ -27,14 +27,14 @@ public abstract class Interactable : NetworkBehaviour
                 {
                     if (highlight)
                         meshRenderer.material.DOFloat(1f - brightness / 100, "_TextureImpact", 0.25f);
-                    Players.Add(col.GetComponent<PlayerMovement>());
+                    Players.Add(col.GetComponent<Player>());
                 }
             }
             else
             {
                 if (highlight)
                     meshRenderer.material.DOFloat(1f - brightness / 100, "_TextureImpact", 0.25f);
-                Players.Add(col.GetComponent<PlayerMovement>());
+                Players.Add(col.GetComponent<Player>());
             }
         }
     }
@@ -43,7 +43,7 @@ public abstract class Interactable : NetworkBehaviour
     {
         if (col.CompareTag("Player") && usePlayerDirection)
         {
-            var playerController = col.GetComponent<PlayerMovement>();
+            var playerController = col.GetComponent<Player>();
             var isPlayerTracked = Players.Contains(playerController);
             Physics.Raycast(col.transform.position, col.transform.forward, out var hit);
             var isFacingObject = hit.transform != null && hit.transform.gameObject == gameObject;
@@ -68,17 +68,15 @@ public abstract class Interactable : NetworkBehaviour
         {
             if (highlight)
                     meshRenderer.material.DOFloat(1f, "_TextureImpact", 0.25f);
-            Players.Remove(col.GetComponent<PlayerMovement>());
+            Players.Remove(col.GetComponent<Player>());
         }
     }
 
     protected virtual void Update()
     {
         foreach (var player in Players)
-        {
             OnUpdate(player);
-        }
     }
 
-    protected abstract void OnUpdate(PlayerMovement player);
+    protected abstract void OnUpdate(Player player);
 }

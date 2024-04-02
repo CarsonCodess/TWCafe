@@ -3,19 +3,12 @@ using DG.Tweening;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static Extensions;
 
+[RequireComponent(typeof(Player))]
 public class PlayerMovement : NetworkBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private ParticleSystem footsteps;
-    [SerializeField] private Transform dropTarget;
-    [SerializeField] private GameObject holdingItemModel;
-    [SerializeField] private float throwForce = 10f;
-    [SerializeField] private GameObject baseItemPrefab;
-
-    private NetworkList<int> _equippedItem = new NetworkList<int>(DefaultEmptyList(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    private NetworkVariable<bool> _interacting = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     private bool _isEmoting = false;
     private int _emote;
@@ -24,29 +17,23 @@ public class PlayerMovement : NetworkBehaviour
     private AnimationHandler _animHandler;
     private InputHandler _inputHandler;
     private PlayerDash _playerDash;
+    private Player _player;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
         _animHandler = GetComponent<AnimationHandler>();
+        _player = GetComponent<Player>();
         TryGetComponent(out _playerDash);
         if (TryGetComponent(out _inputHandler))
-        {
             _inputHandler.OnMove += OnMove;
-            _inputHandler.OnDrop += DropAndSpawnItem;
-            _inputHandler.OnThrow += Throw;
-        }
     }
 
     public override void OnDestroy()
     {
         base.OnDestroy();
         if (_inputHandler)
-        {
             _inputHandler.OnMove -= OnMove;
-            _inputHandler.OnDrop -= DropAndSpawnItem;
-            _inputHandler.OnThrow -= Throw;
-        }
     }
     
     public void OnMove(Vector2 moveDir)
@@ -58,13 +45,11 @@ public class PlayerMovement : NetworkBehaviour
     
     private void Update()
     {
-        holdingItemModel.SetActive(_equippedItem[0] != 0);
         if(!IsOwner)
             return;
 
         if (!IsDashing())
         {
-            _interacting.Value = Keyboard.current.eKey.wasPressedThisFrame;
             if(Keyboard.current.digit1Key.wasPressedThisFrame || Keyboard.current.digit2Key.wasPressedThisFrame && !_isEmoting)
                 _isEmoting = true;
             else if (_moveDirection.x != 0f || _moveDirection.y != 0f) // Moving
@@ -90,7 +75,7 @@ public class PlayerMovement : NetworkBehaviour
             return;
         }
         
-        if (_equippedItem[0] == 0)
+        if (_player.GetBaseItem() == 0)
             _animHandler.SetParameter("Holding", 0f, 0.15f);
         else
             _animHandler.SetParameter("Holding", 1f, 0.15f);
@@ -109,86 +94,6 @@ public class PlayerMovement : NetworkBehaviour
             if(footsteps.isPlaying)
                 footsteps.Stop();
         }
-    }
-
-    public void Pickup(List<int> item)
-    {
-        if(!IsOwner)
-            return;
-        DOVirtual.Float(0f, 1f, 0.1f, _ => {}).OnComplete(() => { PickupItem(item); });
-        _isEmoting = false;
-    }
-
-    private void PickupItem(List<int> item)
-    {
-        _equippedItem.Clear();
-        foreach (var id in item)
-            _equippedItem.Add(id);
-        holdingItemModel.SetActive(true);
-        var itemSo = GameManager.Instance.GetItemObject(item[0]);
-        holdingItemModel.GetComponent<MeshFilter>().mesh = itemSo.mesh;
-        holdingItemModel.GetComponent<MeshRenderer>().material = itemSo.material;
-    }
-
-    public void DropAndSpawnItem()
-    {
-        if(_equippedItem[0] == 0 || !IsOwner)
-            return;
-        DropAndSpawnItemServerRpc();
-    }
-
-    [ServerRpc]
-    private void DropAndSpawnItemServerRpc()
-    {
-        SpawnItem(dropTarget.position);
-    }
-
-    private GameObject SpawnItem(Vector3 pos)
-    {
-        var itemObject = Instantiate(baseItemPrefab, pos, Quaternion.identity);
-        itemObject.GetComponent<NetworkObject>().Spawn();
-        itemObject.GetComponent<Pickup>().Initialize(_equippedItem.ToList());
-        Drop();
-        return itemObject;
-    }
-
-    public void Throw()
-    {
-        if(_equippedItem[0] == 0 || !IsOwner)
-            return;
-        ThrowServerRpc();
-        _animHandler.Stop();
-        _animHandler.Play("Throw", 0.15f);
-    }
-
-    [ServerRpc]
-    private void ThrowServerRpc()
-    {
-        var itemObject = SpawnItem(holdingItemModel.transform.position);
-        itemObject.GetComponent<Rigidbody>().AddForce(transform.forward * throwForce, ForceMode.Impulse);
-    }
-    
-    public void Drop()
-    {
-        _equippedItem.Clear();
-        _equippedItem.Add(0);
-        holdingItemModel.SetActive(false);
-        _isEmoting = false;
-    }
-
-    public int GetBaseItem()
-    {
-        return _equippedItem[0];
-    }
-    
-    public List<int> GetEntireItem()
-    {
-        return _equippedItem.ToList();
-    }
-
-    public bool IsPressingInteract()
-    {
-        return _interacting.Value;
     }
 
     private bool IsDashing()

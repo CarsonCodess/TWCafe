@@ -11,7 +11,7 @@ public class Table : Interactable
     private NetworkList<int> _items = new NetworkList<int>(Extensions.DefaultEmptyArray());
     private List<GameObject> _itemRenderers = new List<GameObject>();
 
-    protected override void OnUpdate(PlayerMovement player)
+    protected override void OnUpdate(Player player)
     {
         if (player != null && HasItem() && player.IsPressingInteract() && player.GetBaseItem() == 0)
         {

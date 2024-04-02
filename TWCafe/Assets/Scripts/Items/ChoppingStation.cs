@@ -14,7 +14,7 @@ public class ChoppingStation : Interactable
     private NetworkVariable<int> _itemCooking = new NetworkVariable<int>();
     private NetworkVariable<float> _chopProgress = new NetworkVariable<float>();
 
-    protected override void OnUpdate(PlayerMovement player)
+    protected override void OnUpdate(Player player)
     {
         // if(!IsHost)
         //     return;
@@ -81,7 +81,7 @@ public class ChoppingStation : Interactable
         _chopProgress.Value = math.max(0, progress);
     }
 
-    private Ingredient GetItemObject(PlayerMovement player)
+    private Ingredient GetItemObject(Player player)
     {
         return GameManager.Instance.GetItemObject(player.GetBaseItem());
     }

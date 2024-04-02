@@ -16,7 +16,7 @@ public class FoodStation : Interactable
     private bool _isCooked;
     private bool _isBurnt;
 
-    protected override void OnUpdate(PlayerMovement player)
+    protected override void OnUpdate(Player player)
     {
         if (_itemCooking.Value > 0 && player != null && player.IsPressingInteract() && player.GetBaseItem() == 0)
         {
@@ -112,7 +112,7 @@ public class FoodStation : Interactable
         _itemCooking.Value = item;
     }
 
-    private Ingredient GetItemObject(PlayerMovement player)
+    private Ingredient GetItemObject(Player player)
     {
         return GameManager.Instance.GetItemObject(player.GetBaseItem());
     }

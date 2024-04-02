@@ -8997,6 +8997,7 @@ GameObject:
   - component: {fileID: 3354989541166659758}
   - component: {fileID: -15532947494095419}
   - component: {fileID: 6258654577561401833}
+  - component: {fileID: 2020102952773043881}
   - component: {fileID: -8112233280717453726}
   - component: {fileID: 6407507709163893332}
   - component: {fileID: 7620702134325001458}
@@ -9061,6 +9062,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 800cc4d466ed8b4478b6a9f1c79531b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2020102952773043881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9033403922857130567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5dab590df9495234490fcb2feb2f1746, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dropTarget: {fileID: 6715105912818188728}
+  holdingItemModel: {fileID: 5739297491200093718}
+  throwForce: 10
+  baseItemPrefab: {fileID: 7135026216388607922, guid: f13c51945be4c1e4782be7eb2e308dd4, type: 3}
 --- !u!114 &-8112233280717453726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9090,10 +9107,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 5
   footsteps: {fileID: 6304844430455242547}
-  dropTarget: {fileID: 6715105912818188728}
-  holdingItemModel: {fileID: 5739297491200093718}
-  throwForce: 15
-  baseItemPrefab: {fileID: 7135026216388607922, guid: f13c51945be4c1e4782be7eb2e308dd4, type: 3}
 --- !u!114 &7620702134325001458
 MonoBehaviour:
   m_ObjectHideFlags: 0

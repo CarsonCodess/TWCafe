@@ -41,7 +41,7 @@ public class Pickup : Interactable
         }
     }
 
-    protected override void OnUpdate(PlayerMovement player)
+    protected override void OnUpdate(Player player)
     {
         
     }
