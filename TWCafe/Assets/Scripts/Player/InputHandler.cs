@@ -1,6 +1,7 @@
 using System;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class InputHandler : NetworkBehaviour
 {
@@ -21,9 +22,30 @@ public class InputHandler : NetworkBehaviour
     {
         _playerControls.Enable(); 
 
-        _playerControls.Movement.Dash.performed += c => OnDash?.Invoke();
-        _playerControls.Movement.Drop.performed += c => OnDrop?.Invoke();
-        _playerControls.Movement.Throw.performed += c => OnThrow?.Invoke();
+        _playerControls.Movement.Dash.performed += Dash;
+        _playerControls.Movement.Drop.performed += Drop;
+        _playerControls.Movement.Throw.performed += Throw;
+    }
+
+    private void Drop(InputAction.CallbackContext c)
+    {
+        if(!IsOwner)
+            return;
+        OnDrop?.Invoke();
+    }
+    
+    private void Dash(InputAction.CallbackContext c)
+    {
+        if(!IsOwner)
+            return;
+        OnDash?.Invoke();
+    }
+    
+    private void Throw(InputAction.CallbackContext c)
+    {
+        if(!IsOwner)
+            return;
+        OnThrow?.Invoke();
     }
 
     private void Update()

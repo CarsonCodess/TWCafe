@@ -35,7 +35,7 @@ public class FoodStation : Interactable
             _isBurnt = false;
             SetItemServerRpc(player.GetBaseItem());
             indicator.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.GetItemObject(player.GetBaseItem()).icon;
-            player.Drop();
+            player.DropServerRpc();
         }
     }
 

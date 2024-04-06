@@ -26,7 +26,7 @@ public class ChoppingStation : Interactable
                 GameManager.Instance.GetItemObject(player.GetBaseItem()).icon;
             PlayerSetServerRpc();
             SetItemServerRpc(player.GetBaseItem());
-            player.Drop();
+            player.DropServerRpc();
         }
 
         if (_itemCooking.Value > 0 && !indicator.activeSelf)
@@ -55,7 +55,7 @@ public class ChoppingStation : Interactable
                     }
                 }
                 else
-                    DOVirtual.Float(_chopProgress.Value, _chopProgress.Value + 1f / GameManager.Instance.GetItemObject(_itemCooking.Value).chopAmount, 0.15f, SetProgressServerRpc);
+                    DOVirtual.Float(_chopProgress.Value, _chopProgress.Value + (1f - Time.deltaTime / 4) / GameManager.Instance.GetItemObject(_itemCooking.Value).chopAmount, 0.15f, SetProgressServerRpc);
             }
         }
         

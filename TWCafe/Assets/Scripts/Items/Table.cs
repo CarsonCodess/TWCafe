@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
+using Sirenix.OdinInspector;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -8,7 +10,7 @@ public class Table : Interactable
 {
     [Header("Table")]
     [SerializeField] private GameObject itemRenderer;
-    private NetworkList<int> _items = new NetworkList<int>(Extensions.DefaultEmptyArray());
+    [ReadOnly] public NetworkList<int> _items = new NetworkList<int>(Extensions.DefaultEmptyArray());
     private List<GameObject> _itemRenderers = new List<GameObject>();
 
     protected override void OnUpdate(Player player)
@@ -28,16 +30,8 @@ public class Table : Interactable
             if (!HasItem())
             {
                 SetItemServerRpc(player.GetEntireItem().ToArray());
-                foreach (var item in player.GetEntireItem())
-                {
-                    var rend = Instantiate(itemRenderer, transform);
-                    var itemSo = GameManager.Instance.GetItemObject(item);
-                    rend.GetComponent<MeshFilter>().mesh = itemSo.mesh;
-                    rend.GetComponent<MeshRenderer>().material = itemSo.material;
-                    _itemRenderers.Add(rend);
-                }
-
-                player.Drop();
+                SpawnItemModel(player);
+                player.DropServerRpc();
             }
             else
             {
@@ -70,16 +64,40 @@ public class Table : Interactable
                 if (canPlace)
                 {
                     AddItemServerRpc(player.GetBaseItem());
-                    foreach (var item in player.GetEntireItem())
-                    {
-                        var rend = Instantiate(itemRenderer, transform);
-                        var itemSo = GameManager.Instance.GetItemObject(item);
-                        rend.GetComponent<MeshFilter>().mesh = itemSo.mesh;
-                        rend.GetComponent<MeshRenderer>().material = itemSo.material;
-                        _itemRenderers.Add(rend);
-                    }
-                    player.Drop();
+                    SpawnItemModel(player);
+                    player.DropServerRpc();
                 }
+            }
+        }
+    }
+
+    private void SpawnItemModel(Player player)
+    {
+        foreach (var item in player.GetEntireItem())
+        {
+            var rend = Instantiate(itemRenderer, transform);
+            rend.transform.localPosition = new Vector3(0f, 1f, 0f);
+            var itemSo = GameManager.Instance.GetItemObject(item);
+            rend.GetComponent<MeshFilter>().mesh = itemSo.mesh;
+            rend.GetComponent<MeshRenderer>().material = itemSo.material;
+            _itemRenderers.Add(rend);
+        }
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+        if (_itemRenderers.Count == 0 && _items[0] != 0)
+        {
+            foreach (var ingredient in _items)
+            {
+                var rend = Instantiate(itemRenderer, transform);
+                rend.transform.localPosition = Vector3.zero;
+                rend.transform.localRotation = Quaternion.Euler(new Vector3(-90f, 0f, 0f));
+                var itemSo = GameManager.Instance.GetItemObject(ingredient);
+                rend.GetComponent<MeshFilter>().mesh = itemSo.mesh;
+                rend.GetComponent<MeshRenderer>().material = itemSo.material;
+                _itemRenderers.Add(rend);
             }
         }
     }

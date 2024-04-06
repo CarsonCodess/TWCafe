@@ -140,7 +140,7 @@ public class Customer : Interactable
         else if (player.IsPressingInteract() && _hasTakenOrder.Value && _isReady.Value && player.GetBaseItem() != 0)
         {
             //Check if correct item
-            player.Drop();
+            player.DropServerRpc();
             ServeServerRpc();
         }
     }
