@@ -41,6 +41,7 @@ public class Pickup : Interactable
             rend.GetComponent<MeshRenderer>().material = itemSo.material;
             _itemRenderers.Add(rend);
         }
+        GetRenderers();
     }
 
     protected override void OnUpdate(Player player)

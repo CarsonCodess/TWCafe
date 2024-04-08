@@ -70,9 +70,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24ae1a691c502194aa171592694a9d2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlight: 0
+  highlight: 1
   usePlayerDirection: 0
-  meshRenderer: {fileID: 0}
   brightness: 2.5
   itemRenderer: {fileID: 8378256940152021813, guid: 4cd8db4612b324741bf676cfd4c999ed, type: 3}
 --- !u!135 &5316350601414015753

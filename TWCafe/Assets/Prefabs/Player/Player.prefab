@@ -9042,7 +9042,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1032143989
+  GlobalObjectIdHash: 3528221963
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 1
@@ -9075,9 +9075,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dropTarget: {fileID: 6715105912818188728}
-  holdingItemModel: {fileID: 5739297491200093718}
+  holdingItemParent: {fileID: 8904962869533216991}
   throwForce: 10
   baseItemPrefab: {fileID: 7135026216388607922, guid: f13c51945be4c1e4782be7eb2e308dd4, type: 3}
+  itemRendererPrefab: {fileID: 8378256940152021813, guid: 4cd8db4612b324741bf676cfd4c999ed, type: 3}
 --- !u!114 &-8112233280717453726
 MonoBehaviour:
   m_ObjectHideFlags: 0

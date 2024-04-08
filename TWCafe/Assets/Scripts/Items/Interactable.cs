@@ -1,19 +1,34 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
-using ExternPropertyAttributes;
+using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public abstract class Interactable : NetworkBehaviour
 {
     [Header("Interactable")]
     [SerializeField] protected bool highlight;
     [SerializeField] protected bool usePlayerDirection;
-    [SerializeField, ShowIf("highlight")] protected Renderer meshRenderer;
-    [SerializeField, ShowIf("highlight")] protected float brightness = 10;
-    
+    [SerializeField, ShowIf("highlight")] protected float brightness = 2.5f;
+    protected List<Renderer> MeshRenderers;
+
     protected List<Player> Players = new List<Player>();
+
+    public void Awake()
+    {
+        GetRenderers();
+    }
+
+    protected void GetRenderers()
+    {
+        MeshRenderers = GetComponents<Renderer>().ToList();
+        if (MeshRenderers == null || MeshRenderers.Count == 0)
+            MeshRenderers = GetComponentsInChildren<Renderer>().ToList();
+    }
 
     protected virtual void OnTriggerEnter(Collider col)
     {
@@ -24,18 +39,10 @@ public abstract class Interactable : NetworkBehaviour
                 Physics.Raycast(col.transform.position, col.transform.forward, out var hit);
                 var isFacingObject = hit.transform != null && hit.transform.gameObject == gameObject;
                 if (isFacingObject)
-                {
-                    if (highlight)
-                        meshRenderer.material.DOFloat(1f - brightness / 100, "_TextureImpact", 0.25f);
-                    Players.Add(col.GetComponent<Player>());
-                }
+                    Highlight(col.transform);
             }
             else
-            {
-                if (highlight)
-                    meshRenderer.material.DOFloat(1f - brightness / 100, "_TextureImpact", 0.25f);
-                Players.Add(col.GetComponent<Player>());
-            }
+                Highlight(col.transform);
         }
     }
 
@@ -43,33 +50,42 @@ public abstract class Interactable : NetworkBehaviour
     {
         if (col.CompareTag("Player") && usePlayerDirection)
         {
-            var playerController = col.GetComponent<Player>();
-            var isPlayerTracked = Players.Contains(playerController);
+            var isPlayerTracked = Players.Contains(col.GetComponent<Player>());
             Physics.Raycast(col.transform.position, col.transform.forward, out var hit);
             var isFacingObject = hit.transform != null && hit.transform.gameObject == gameObject;
             if (isFacingObject && !isPlayerTracked)
-            {
-                if (highlight)
-                        meshRenderer.material.DOFloat(1f - brightness / 100, "_TextureImpact", 0.25f);
-                Players.Add(playerController);
-            }
+                Highlight(col.transform);
             else if (!isFacingObject && isPlayerTracked)
-            {
-                if (highlight)
-                        meshRenderer.material.DOFloat(1f, "_TextureImpact", 0.25f);
-                Players.Remove(playerController);
-            }
+                Unhighlight(col.transform);
         }
     }
     
     protected virtual void OnTriggerExit(Collider col)
     {
         if (col.CompareTag("Player"))
+            Unhighlight(col.transform);
+    }
+
+    protected void Highlight(Transform tr)
+    {
+        if (highlight)
         {
-            if (highlight)
-                    meshRenderer.material.DOFloat(1f, "_TextureImpact", 0.25f);
-            Players.Remove(col.GetComponent<Player>());
+            foreach (var renderer in MeshRenderers)
+                renderer.material.DOFloat(1f - brightness / 100, "_TextureImpact", 0.25f);
         }
+
+        Players.Add(tr.GetComponent<Player>());
+    }
+    
+    protected void Unhighlight(Transform tr)
+    {
+        if (highlight)
+        {
+            foreach (var renderer in MeshRenderers)
+                renderer.material.DOFloat(1f, "_TextureImpact", 0.25f);
+        }
+
+        Players.Remove(tr.GetComponent<Player>());
     }
 
     protected virtual void Update()

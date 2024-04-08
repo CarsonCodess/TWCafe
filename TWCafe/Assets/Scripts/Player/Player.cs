@@ -1,22 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using static Extensions;
 
 public class Player : NetworkBehaviour
 {
     [SerializeField] private Transform dropTarget;
-    [SerializeField] private GameObject holdingItemModel;
+    [FormerlySerializedAs("holdingItemModel"), SerializeField] private GameObject holdingItemParent;
     [SerializeField] private float throwForce = 10f;
     [SerializeField] private GameObject baseItemPrefab;
+    [SerializeField] private GameObject itemRendererPrefab;
     
     private NetworkList<int> _equippedItem = new NetworkList<int>(DefaultEmptyList(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     private NetworkVariable<bool> _interacting = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     
     private InputHandler _inputHandler;
+    
+    private List<GameObject> _itemRenderers = new List<GameObject>();
     
     private void Awake()
     {
@@ -39,7 +44,7 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
-        holdingItemModel.SetActive(_equippedItem[0] != 0);
+        holdingItemParent.SetActive(_equippedItem[0] != 0);
         if(!IsOwner)
             return;
         _interacting.Value = Keyboard.current.eKey.wasPressedThisFrame;
@@ -68,16 +73,30 @@ public class Player : NetworkBehaviour
         _equippedItem.Clear();
         foreach (var id in item)
             _equippedItem.Add(id);
-        holdingItemModel.SetActive(true);
-        SetHoldingItemClientRpc(item[0]);
+        SetHoldingItemClientRpc(item);
     }
 
     [ClientRpc]
-    private void SetHoldingItemClientRpc(int item)
+    private void SetHoldingItemClientRpc(int[] ingredients)
     {
-        var itemSo = GameManager.Instance.GetItemObject(item);
-        holdingItemModel.GetComponent<MeshFilter>().mesh = itemSo.mesh;
-        holdingItemModel.GetComponent<MeshRenderer>().material = itemSo.material;
+        foreach (var ingredient in ingredients)
+        {
+            var rend = Instantiate(itemRendererPrefab, holdingItemParent.transform);
+            rend.transform.localPosition = new Vector3(0f, -0.1f, -0.3f);
+            rend.transform.localRotation = Quaternion.Euler(new Vector3(75f, 10f, -10f));
+            var itemSo = GameManager.Instance.GetItemObject(ingredient);
+            rend.GetComponent<MeshFilter>().mesh = itemSo.mesh;
+            rend.GetComponent<MeshRenderer>().material = itemSo.material;
+            _itemRenderers.Add(rend);
+        }
+    }
+
+    [ClientRpc]
+    private void ClearHoldingItemClientRpc()
+    {
+        foreach (var rend in _itemRenderers)
+            Destroy(rend);
+        _itemRenderers.Clear();
     }
 
     public void DropAndSpawnItem()
@@ -113,16 +132,16 @@ public class Player : NetworkBehaviour
     [ServerRpc]
     private void ThrowServerRpc()
     {
-        var itemObject = SpawnItem(holdingItemModel.transform.position);
+        var itemObject = SpawnItem(holdingItemParent.transform.position);
         itemObject.GetComponent<Rigidbody>().AddForce(transform.forward * throwForce, ForceMode.Impulse);
     }
     
     [ServerRpc(RequireOwnership = false)]
     public void DropServerRpc()
     {
+        ClearHoldingItemClientRpc();
         _equippedItem.Clear();
         _equippedItem.Add(0);
-        holdingItemModel.SetActive(false);
     }
 
     public bool IsPressingInteract()
