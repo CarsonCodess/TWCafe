@@ -14,7 +14,10 @@
 
         [Space]
         _NoiseIntensity ("Noise Intensity", Range (0, 0.25)) = 0.0
-
+        _NoiseThreshold ("Noise Threshold", Range (0, 0.25)) = 0.0
+        [Space]
+        _StarSize ("Star Size", Range (0, 1000)) = 0.0
+        
         [HideInInspector]
         _Direction ("Direction", Vector) = (0, 1, 0, 0)
     }
@@ -22,6 +25,7 @@
     CGINCLUDE
 
     #include "UnityCG.cginc"
+    #pragma multi_compile SNAP_OFF SNAP_ON
 
     struct appdata {
         float4 position : POSITION;
@@ -41,6 +45,8 @@
     half _Intensity;
     half _Exponent;
     half _NoiseIntensity;
+    half _NoiseThreshold;
+    half _StarSize;
 
     v2f vert (appdata v) {
         v2f o;
@@ -51,18 +57,33 @@
         return o;
     }
 
-    fixed4 frag (v2f i) : COLOR {
-        const half d = dot(normalize(i.texcoord), _Direction) * 0.5f + 0.5f;
-        float t = pow(d, _Exponent);
-        t += frac(sin(dot(t, float4(12.9898, 78.233, 45.164, 94.673))) * 43758.5453) * _NoiseIntensity;
-        return lerp(_Color1, _Color2, t) * _Intensity;
+    float Random(float2 position) {
+        #if SNAP_ON
+        float gridSize = 1 / _StarSize;
+        float2 gridPosition = floor(position / gridSize) * gridSize;
+        return frac(sin(dot(gridPosition, float2(12.9898, 78.233))) * 43758.5453);
+        #else
+        return frac(sin(dot(position, float2(12.9898, 78.233))) * 43758.5453);
+        #endif
     }
 
+
+    fixed4 frag (v2f i) : COLOR {
+        const half d = dot(normalize(i.texcoord), _Direction) * 0.5f + 0.5f;
+        const float t = pow(d, _Exponent);
+        
+        const float2 normalizedUVs = float2(normalize(i.texcoord).r, normalize(i.texcoord).b) / normalize(i.texcoord).g;
+        if(Random(normalizedUVs * _NoiseIntensity) > _NoiseThreshold)
+            return lerp(_Color1, _Color2, t) * _Intensity;
+        return fixed4(1, 1, 1, 1);
+    }
+    
     ENDCG
 
     SubShader {
         Tags { "RenderType"="Background" "Queue"="Background" }
-
+        
+        
         Pass {
             ZWrite Off
             Cull Off

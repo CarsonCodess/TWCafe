@@ -24,15 +24,9 @@ Material:
   m_Shader: {fileID: 4800000, guid: e32cae2a5bbfb41888ef2ba8391ab87d, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
-  m_InvalidKeywords:
-  - _BASEMAP_PREMULTIPLY
-  - _CELPRIMARYMODE_STEPS
-  - _DETAILMAPBLENDINGMODE_MULTIPLY
-  - _GRADIENTSPACE_WORLD
-  - _OUTLINESPACE_SCREEN
-  - _TEXTUREBLENDINGMODE_MULTIPLY
-  - _UNITYSHADOWMODE_NONE
+  m_ValidKeywords:
+  - SNAP_ON
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -96,8 +90,20 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Snap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SnapStars:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _StarMask:
+        m_Texture: {fileID: 2800000, guid: d48031874d6ec8745ac41b60956a37ea, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -160,7 +166,8 @@ Material:
     - _LightmapDirectionPitch: 0
     - _LightmapDirectionYaw: 0
     - _Metallic: 0
-    - _NoiseIntensity: 0.1
+    - _NoiseIntensity: 0.25
+    - _NoiseThreshold: 0.005
     - _OcclusionStrength: 1
     - _OutlineDepthOffset: 0
     - _OutlineEnabled: 0
@@ -182,6 +189,7 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
+    - _StarSize: 1000
     - _Surface: 0
     - _TextureBlendingMode: 0
     - _TextureImpact: 1
