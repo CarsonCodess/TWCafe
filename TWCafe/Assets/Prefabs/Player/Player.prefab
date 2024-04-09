@@ -6145,7 +6145,7 @@ GameObject:
   m_Component:
   - component: {fileID: 948900171322764419}
   - component: {fileID: 7900476628179406380}
-  - component: {fileID: 7995633422828942372}
+  - component: {fileID: 6080100216089293242}
   m_Layer: 7
   m_Name: Model
   m_TagString: Untagged
@@ -6194,7 +6194,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &7995633422828942372
+--- !u!114 &6080100216089293242
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9042,7 +9042,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3528221963
+  GlobalObjectIdHash: 1032143989
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 1
@@ -9074,8 +9074,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dab590df9495234490fcb2feb2f1746, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dropTarget: {fileID: 6715105912818188728}
   holdingItemParent: {fileID: 8904962869533216991}
+  dropTarget: {fileID: 6715105912818188728}
   throwForce: 10
   baseItemPrefab: {fileID: 7135026216388607922, guid: f13c51945be4c1e4782be7eb2e308dd4, type: 3}
   itemRendererPrefab: {fileID: 8378256940152021813, guid: 4cd8db4612b324741bf676cfd4c999ed, type: 3}
@@ -9136,17 +9136,17 @@ MonoBehaviour:
   SyncPositionX: 1
   SyncPositionY: 1
   SyncPositionZ: 1
-  SyncRotAngleX: 0
+  SyncRotAngleX: 1
   SyncRotAngleY: 1
-  SyncRotAngleZ: 0
+  SyncRotAngleZ: 1
   SyncScaleX: 0
   SyncScaleY: 0
   SyncScaleZ: 0
   PositionThreshold: 0.001
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
+  UseQuaternionSynchronization: 1
+  UseQuaternionCompression: 1
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
   Interpolate: 1

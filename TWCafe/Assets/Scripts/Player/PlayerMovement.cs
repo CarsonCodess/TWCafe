@@ -1,12 +1,16 @@
 using System.Collections.Generic;
 using DG.Tweening;
+using Sirenix.OdinInspector;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[HideMonoScript]
 [RequireComponent(typeof(Player))]
 public class PlayerMovement : NetworkBehaviour
 {
+    [Header("Movement")]
+    [HorizontalLine(Thickness = 2, Padding = 15)]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private ParticleSystem footsteps;
 
@@ -45,6 +49,16 @@ public class PlayerMovement : NetworkBehaviour
     
     private void Update()
     {
+        if (_rb.velocity.magnitude > 0.1f)
+        {
+            if(!footsteps.isPlaying)
+                footsteps.Play();
+        }
+        else
+        {
+            if(footsteps.isPlaying)
+                footsteps.Stop();
+        }
         if(!IsOwner)
             return;
 
@@ -83,17 +97,11 @@ public class PlayerMovement : NetworkBehaviour
         if (_moveDirection.x != 0f || _moveDirection.y != 0f) // Moving
         {
             _animHandler.SetParameter("Action", 1f, 0.15f);
-            if(!footsteps.isPlaying)
-                footsteps.Play();
             if(new Vector3(_rb.velocity.x, 0f, _rb.velocity.z) != Vector3.zero)
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(new Vector3(_rb.velocity.x, 0f, _rb.velocity.z)), Time.deltaTime * 15f);
         }
         else
-        {
             _animHandler.SetParameter("Action", 0f, 0.15f);
-            if(footsteps.isPlaying)
-                footsteps.Stop();
-        }
     }
 
     private bool IsDashing()

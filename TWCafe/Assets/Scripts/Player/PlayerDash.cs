@@ -1,11 +1,15 @@
 using System;
 using DG.Tweening;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
+[HideMonoScript]
 public class PlayerDash : MonoBehaviour
 {
     public bool IsDashing { get; private set; }
-    
+
+    [Header("Dashing")]
+    [HorizontalLine(Thickness = 2, Padding = 15)]
     [SerializeField] private float dashCooldown = 2f;
     [SerializeField] private float dashDistance = 5f;
     [SerializeField] private float dashTime = 0.4f;

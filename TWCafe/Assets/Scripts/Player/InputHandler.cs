@@ -1,8 +1,10 @@
 using System;
+using Sirenix.OdinInspector;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[HideMonoScript]
 public class InputHandler : NetworkBehaviour
 {
     public Vector2 MovementDirection { get; private set; }

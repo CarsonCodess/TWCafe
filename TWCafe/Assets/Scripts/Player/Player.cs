@@ -1,18 +1,24 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using DG.Tweening;
+using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 using static Extensions;
 
+[HideMonoScript]
 public class Player : NetworkBehaviour
 {
+    [Header("Holding")]
+    [HorizontalLine(Thickness = 2, Padding = 15)]
+    [SerializeField] private GameObject holdingItemParent;
+    [Header("Dropping/Throwing")]
+    [HorizontalLine(Thickness = 2, Padding = 15)]
     [SerializeField] private Transform dropTarget;
-    [FormerlySerializedAs("holdingItemModel"), SerializeField] private GameObject holdingItemParent;
     [SerializeField] private float throwForce = 10f;
+    [Header("Item Prefabs")]
+    [HorizontalLine(Thickness = 2, Padding = 15)]
     [SerializeField] private GameObject baseItemPrefab;
     [SerializeField] private GameObject itemRendererPrefab;
     

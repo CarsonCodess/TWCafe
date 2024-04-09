@@ -3,8 +3,11 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
+[HideMonoScript]
 public class AnimationHandler : MonoBehaviour
 {
+    [Header("Animation")]
+    [HorizontalLine(Thickness = 2, Padding = 15)]
     [SerializeField] private Animator anim;
     private string _animationState;
 
